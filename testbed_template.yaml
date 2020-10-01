@@ -5,9 +5,9 @@ devices:                # all device definition goes under devices block
     type: iosxe
     credentials:
       default:                         # login credentials
-        username: cisco
-        password: cisco
+        username: username
+        password: password
     connections:        # give the block on how to connect to its mgmt interface
       vty:
         protocol: ssh
-        ip: 172.16.2.10
+        ip: '1.2.3.4' # replace with the IP address of the device
