@@ -1,11 +1,3 @@
-## TODO
-# - take the name of the bin file as arg, and give a default value
-# - take the testbed as an arg
-# - do a ping monitor script --> bonus
-
-
-# ===
-
 # import the aetest module
 from pyats import aetest
 import logging
