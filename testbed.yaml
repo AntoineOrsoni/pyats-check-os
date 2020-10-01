@@ -1,0 +1,13 @@
+devices:                # all device definition goes under devices block
+  CSR1000v-1:           # start a device definition with its HOSTNAME
+    os: iosxe           # this tells the engine what type of OS its connected to
+    series: csr1000v
+    type: iosxe
+    credentials:
+      default:                         # login credentials
+        username: cisco
+        password: cisco
+    connections:        # give the block on how to connect to its mgmt interface
+      vty:
+        protocol: ssh
+        ip: 172.16.2.10
