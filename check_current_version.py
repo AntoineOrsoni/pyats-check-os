@@ -32,29 +32,22 @@ class CommonSetup(aetest.CommonSetup):
 class TestCase(aetest.Testcase):
 
     @aetest.test
-    def check_os_flash(self, testbed):
+    def check_current_version(self, testbed):
 
         for device in testbed:
             
-            os_download = False
-
-            # Checking all the files in the bootflash
-            files = device.parse('dir')
-            os_target = 'csr1000v-mono-universalk9.16.09.04.SPA.pkg'
-
-            for file in files['dir']['bootflash:/']['files']:
-
-                if file == os_target: os_download = True
-
-            if os_download == True:
-                logger.info('{os} is successfuly copied on the following devices:'.format(os=os_target)) 
-                logger.info('  - {device}'.format(device=str(device.alias)))
+            # Checking the current version of the device
+            os_version_installed = device.parse('show version')['version']['version']
             
-            else:
-                logger.info('{os} is not copied on the following devices:'.format(os=os_target)) 
+            if os_version_installed == '16.9.4':
+                logger.info('List of devices with 16.9.4:')
+                logger.info('  - {device}'.format(device=str(device.alias)))          
+            elif os_version_installed == '16.12.4':
+                logger.info('List of devices with 16.12.4:')
                 logger.info('  - {device}'.format(device=str(device.alias)))
-
-            assert os_download == True
+            else:
+                logger.info('List of devices with the wrong image:')
+                logger.info('{device} OS version is: {version}'.format(device=device.alias, version=os_version_installed))
 
 class CommonCleanup(aetest.CommonCleanup):
 
