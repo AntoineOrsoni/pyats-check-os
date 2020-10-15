@@ -34,12 +34,12 @@ class TestCase(aetest.Testcase):
     @aetest.test
     def check_os_flash(self, testbed):
 
+        list_true = []
+        list_false = []
+
         for device in testbed:
             
             os_download = False
-
-            list_true = []
-            list_false = []
 
             # Checking all the files in the bootflash
             files = device.parse('dir')
@@ -49,15 +49,10 @@ class TestCase(aetest.Testcase):
 
                 if file == os_target: os_download = True
 
-            if os_download == True: 
-                list_true.append(str(device.alias))
-                logger.info('true !!')
+            if os_download == True: list_true.append(str(device.alias))
             else: list_false.append(str(device.alias))
 
         logger.info('OS name: {os}'.format(os=os_target))
-
-        logger.info('list_true size: {size}'.format(size=str(len(list_true))))
-        logger.info('list_false size: {size}'.format(size=str(len(list_false))))
 
         logger.info('OS is copied on:')
         for i in range(len(list_true)):
@@ -94,4 +89,3 @@ if __name__ == '__main__':
     testbed = load(args.testbed)
 
     aetest.main(testbed = testbed)
-
