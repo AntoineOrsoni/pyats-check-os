@@ -49,7 +49,9 @@ class TestCase(aetest.Testcase):
 
                 if file == os_target: os_download = True
 
-            if os_download == True: list_true.append(str(device.alias))
+            if os_download == True: 
+                list_true.append(str(device.alias))
+                logger.info('true !!')
             else: list_false.append(str(device.alias))
 
         logger.info('OS name: {os}'.format(os=os_target))
