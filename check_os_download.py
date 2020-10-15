@@ -56,6 +56,9 @@ class TestCase(aetest.Testcase):
 
         logger.info('OS name: {os}'.format(os=os_target))
 
+        logger.info('list_true size: {size}'.format(size=str(len(list_true))))
+        logger.info('list_false size: {size}'.format(size=str(len(list_false))))
+
         logger.info('OS is copied on:')
         for i in range(len(list_true)):
             logger.info('  - {device}'.format(device=list_true[i]))
