@@ -56,12 +56,11 @@ class TestCase(aetest.Testcase):
 
         logger.info('OS is copied on:')
         for i in range(len(list_true)):
-            logger.info('  - {device}'.format(device=str(device.alias)))
+            logger.info('  - {device}'.format(device=list_true[i]))
         
         logger.info('OS is NOT copied on:') 
         for i in range(len(list_false)):
-            logger.info('  - {device}'.format(device=str(device.alias)))
-
+            logger.info('  - {device}'.format(device=list_false[i]))
 
 class CommonCleanup(aetest.CommonCleanup):
 
