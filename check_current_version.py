@@ -59,6 +59,9 @@ class TestCase(aetest.Testcase):
         for i in range(len(list_other)):
             logger.info('  - {device}'.format(device=list_other[i]))
 
+        # Assert we have all devices in 16-12-4
+        # assert len(list_1694) == 0
+        # assert len(list_other) == 0
 
 class CommonCleanup(aetest.CommonCleanup):
 

@@ -38,6 +38,9 @@ class TestCase(aetest.Testcase):
             
             os_download = False
 
+            list_true = []
+            list_false = []
+
             # Checking all the files in the bootflash
             files = device.parse('dir')
             os_target = 'asr900rsp3-universalk9_npe.16.12.04.SPA.bin'
@@ -46,15 +49,19 @@ class TestCase(aetest.Testcase):
 
                 if file == os_target: os_download = True
 
-            if os_download == True:
-                logger.info('{os} is successfuly copied on the following devices:'.format(os=os_target)) 
-                logger.info('  - {device}'.format(device=str(device.alias)))
-            
-            else:
-                logger.info('{os} is not copied on the following devices:'.format(os=os_target)) 
-                logger.info('  - {device}'.format(device=str(device.alias)))
+            if os_download == True: list_true.append(str(device.alias))
+            else: list_false.append(str(device.alias))
 
-            assert os_download == True
+        logger.info('OS name: {os}'.format(os=os_target))
+
+        logger.info('OS is copied on:')
+        for i in range(len(list_true)):
+            logger.info('  - {device}'.format(device=str(device.alias)))
+        
+        logger.info('OS is NOT copied on:') 
+        for i in range(len(list_false)):
+            logger.info('  - {device}'.format(device=str(device.alias)))
+
 
 class CommonCleanup(aetest.CommonCleanup):
 
