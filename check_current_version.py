@@ -34,20 +34,31 @@ class TestCase(aetest.Testcase):
     @aetest.test
     def check_current_version(self, testbed):
 
+        list_16124 = []
+        list_1694 = []
+        list_other = []
+
         for device in testbed:
             
             # Checking the current version of the device
             os_version_installed = device.parse('show version')['version']['version']
             
-            if os_version_installed == '16.9.4':
-                logger.info('List of devices with 16.9.4:')
-                logger.info('  - {device}'.format(device=str(device.alias)))          
-            elif os_version_installed == '16.12.4':
-                logger.info('List of devices with 16.12.4:')
-                logger.info('  - {device}'.format(device=str(device.alias)))
-            else:
-                logger.info('List of devices with the wrong image:')
-                logger.info('{device} OS version is: {version}'.format(device=device.alias, version=os_version_installed))
+            if os_version_installed == '16.9.4': list_1694.append(str(device.alias))
+            elif os_version_installed == '16.12.4': list_16124.append(str(device.alias))
+            else: list_other.append(str(device.alias))
+
+        logger.info('List of devices with 16.9.4:')
+        for i in range(len(list_1694)):
+            logger.info('  - {device}'.format(device=list_1694[i]))
+        
+        logger.info('List of devices with 16.12.4:')
+        for i in range(len(list_16124)):
+            logger.info('  - {device}'.format(device=list_16124[i]))
+
+        logger.info('List of devices with the wrong image:')
+        for i in range(len(list_other)):
+            logger.info('  - {device}'.format(device=list_other[i]))
+
 
 class CommonCleanup(aetest.CommonCleanup):
 

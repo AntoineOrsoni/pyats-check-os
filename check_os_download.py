@@ -40,7 +40,7 @@ class TestCase(aetest.Testcase):
 
             # Checking all the files in the bootflash
             files = device.parse('dir')
-            os_target = 'csr1000v-mono-universalk9.16.09.04.SPA.pkg'
+            os_target = 'asr900rsp3-universalk9_npe.16.12.04.SPA.bin'
 
             for file in files['dir']['bootflash:/']['files']:
 
