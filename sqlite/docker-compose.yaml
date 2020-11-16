@@ -1,0 +1,28 @@
+version: '3.8'
+
+volumes:
+  sqlitebrowser_config:
+    driver: local
+
+services:
+  sqlite:
+    restart: unless-stopped
+    tty: true
+    build: .
+    container_name: sqlite
+    volumes:
+      - ./db:/db
+
+  sqlitebrowser:
+    restart: unless-stopped
+    image: ghcr.io/linuxserver/sqlitebrowser
+    container_name: sqlitebrowser
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - sqlitebrowser_config:/config
+      - ./db:/db
+    ports:
+      - 3000:3000
