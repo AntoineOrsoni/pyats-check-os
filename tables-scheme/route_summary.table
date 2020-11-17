@@ -1,0 +1,7 @@
+| MyRouter | VRF     | Protocol  | Networks | Subnets | TimeStamp           |
+| -------- | ------- | --------- | -------- | ------- | ------------------- |
+| ASR903_5 | default | BGP       | 10       | 1       | 2020-11-17 11:47:12 |
+| ASR903_5 | default | Static    | 20       | 2       | 2020-11-17 11:47:12 |
+| ASR903_5 | default | ISIS      | 30       | 3       | 2020-11-17 11:47:12 |
+| ASR903_5 | default | Connected | 40       | 4       | 2020-11-17 11:47:12 |
+| ASR903_5 | default | Internal  | 50       | 5       | 2020-11-17 11:47:12 |
