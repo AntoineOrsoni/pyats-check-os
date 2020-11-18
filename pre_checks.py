@@ -64,7 +64,7 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested)
             
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            assert len(outputs_list) == 6, logger.info(f"len(outputs_list ={str(len(outputs_list))}")
+            if len(outputs_list) != 6: self.failed(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
@@ -82,7 +82,7 @@ class CheckOperData(aetest.Testcase):
                 not_compliant.append(device.name)
                 logger.info(f"{os_target_filename} is not copied on {device.name}.")
 
-        assert len(not_compliant) == 0, "OS is not copied on the above devices"
+        if len(not_compliant) != 0: self.failed(f"{os_target_filename} is not copied on the above devices.")
 
     @aetest.test
     def check_os_current_version_device(self, testbed):
@@ -99,7 +99,7 @@ class CheckOperData(aetest.Testcase):
                 not_compliant.append(device.name)
                 logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
-        assert len(not_compliant) == 0, f"The above devices are not using {os_target_version}."
+        if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
 
 class CommonCleanup(aetest.CommonCleanup):

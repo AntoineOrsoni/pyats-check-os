@@ -56,7 +56,6 @@ class CommonSetup(aetest.CommonSetup):
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
 
-
 class CheckSaveDatabase(aetest.Testcase):
 
     @aetest.test
@@ -68,8 +67,15 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested)
             
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            assert len(outputs_list) == 6, logger.info(f"len(outputs_list ={str(len(outputs_list))}")
+            if len(outputs_list) != 6: self.failed(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
+
+    # - route_summary > JSON
+    # - routes        > JSON
+    # - isis          > JSON
+    # - xconnect      > JSON
+    # - os_version    > string
+    # - os_copied     > boolean
 
 class CheckOperData(aetest.Testcase):
 
@@ -88,14 +94,8 @@ class CheckOperData(aetest.Testcase):
                 not_compliant.append(device.name)
                 logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
-        assert len(not_compliant) == 0, f"The above devices are not using {os_target_version}."
+        if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
-    # - route_summary > JSON
-    # - routes        > JSON
-    # - isis          > JSON
-    # - xconnect      > JSON
-    # - os_version    > string
-    # - os_copied     > boolean
 
     @aetest.test
     def check_isis_differences(self, testbed):
@@ -113,12 +113,12 @@ class CheckOperData(aetest.Testcase):
                 not_compliant.append(device.name)
                 logger.info(f"{device.name} number of isis neighbors is less than {isis_neighbors_delta*100}% similar before/after.")                    
 
-        assert len(not_compliant) == 0, f"The above devices have a number of isis neighbors exceeding the threshold."
+        if len(not_compliant) != 0: self.failed(f"The above devices have a number of isis neighbors exceeding the threshold.")
+
 
     @aetest.test
     def check_xconnect_differences(self, testbed):
         pass
-
 
 class CheckRoutesBgp(aetest.Testcase):
 
@@ -228,7 +228,6 @@ class CheckRoutesBgp(aetest.Testcase):
 
             if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
                 self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
-
 
 class CommonCleanup(aetest.CommonCleanup):
 
