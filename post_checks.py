@@ -130,17 +130,32 @@ class CheckRoutesBgp(aetest.Testcase):
 
         protocol = "bgp"
         vrf = "default"
-        not_compliant = []  
+        not_compliant_before = []
+        not_compliant_after = []
+        not_compliant_delta = []  
 
         for device in testbed:
-            routes_number = check.get_routes_before_after(device.name, protocol, vrf)
 
-            # If we have less than 80% similarity in one way OR another, something is wrong
-            if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
-                not_compliant.append(device.name)
-                logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+            # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
+            vrf_exists = check.vrf_exists(device.name, vrf)
+            if (vrf_exists[0] == False): 
+                not_compliant_before.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the pre_check.")
+            if (vrf_exists[0] == False): 
+                not_compliant_after.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the post_check.")
 
-        assert len(not_compliant) == 0, f"The above devices have a number of {protocol} routes exceeding the threshold."
+            # If the VRF exists in both, I can compare
+            if (vrf_exists[0] == True) and (vrf_exists[1] == True):
+                routes_number = check.get_routes_before_after(device.name, protocol, vrf)
+
+                # If we have less than 80% similarity in one way OR another, something is wrong
+                if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
+                    not_compliant_delta.append(device.name)
+                    logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+
+            if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
+                self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
 
 
     @aetest.test
@@ -151,25 +166,32 @@ class CheckRoutesBgp(aetest.Testcase):
 
         protocol = "bgp"
         vrf = "Mcast-SFR"
-        not_compliant = []  
+        not_compliant_before = []
+        not_compliant_after = []
+        not_compliant_delta = []  
 
         for device in testbed:
 
-            # Does the VRF exist in the `show ip route summary`?
+            # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
             vrf_exists = check.vrf_exists(device.name, vrf)
-            if (vrf_exists[0] == False):
-                self.failed(f"{vrf} is missing in the pre_check.")
-            if (vrf_exists[0] == False):
-                self.failed(f"{vrf} is missing in the post_check.")
+            if (vrf_exists[0] == False): 
+                not_compliant_before.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the pre_check.")
+            if (vrf_exists[0] == False): 
+                not_compliant_after.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the post_check.")
 
-            routes_number = check.get_routes_before_after(device.name, protocol, vrf)
+            # If the VRF exists in both, I can compare
+            if (vrf_exists[0] == True) and (vrf_exists[1] == True):
+                routes_number = check.get_routes_before_after(device.name, protocol, vrf)
 
-            # If we have less than 80% similarity in one way OR another, something is wrong
-            if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
-                not_compliant.append(device.name)
-                logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+                # If we have less than 80% similarity in one way OR another, something is wrong
+                if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
+                    not_compliant_delta.append(device.name)
+                    logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
 
-        assert len(not_compliant) == 0, f"The above devices have a number of {protocol} routes exceeding the threshold."
+            if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
+                self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
 
 
     @aetest.test
@@ -180,25 +202,32 @@ class CheckRoutesBgp(aetest.Testcase):
 
         protocol = "bgp"
         vrf = "Bytel"
-        not_compliant = []  
+        not_compliant_before = []
+        not_compliant_after = []
+        not_compliant_delta = []  
 
         for device in testbed:
 
-            # Does the VRF exist in the `show ip route summary`?
+            # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
             vrf_exists = check.vrf_exists(device.name, vrf)
-            if (vrf_exists[0] == False):
-                self.failed(f"{vrf} is missing in the pre_check.")
-            if (vrf_exists[0] == False):
-                self.failed(f"{vrf} is missing in the post_check.")
+            if (vrf_exists[0] == False): 
+                not_compliant_before.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the pre_check.")
+            if (vrf_exists[0] == False): 
+                not_compliant_after.append(device.name)
+                logger.info(f"{device.name} does not have VRF {vrf} in the post_check.")
 
-            routes_number = check.get_routes_before_after(device.name, protocol, vrf)
+            # If the VRF exists in both, I can compare
+            if (vrf_exists[0] == True) and (vrf_exists[1] == True):
+                routes_number = check.get_routes_before_after(device.name, protocol, vrf)
 
-            # If we have less than 80% similarity in one way OR another, something is wrong
-            if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
-                not_compliant.append(device.name)
-                logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+                # If we have less than 80% similarity in one way OR another, something is wrong
+                if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
+                    not_compliant_delta.append(device.name)
+                    logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
 
-        assert len(not_compliant) == 0, f"The above devices have a number of {protocol} routes exceeding the threshold."
+            if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
+                self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
 
 
 class CommonCleanup(aetest.CommonCleanup):
