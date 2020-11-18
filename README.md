@@ -5,6 +5,8 @@ Leveragging `pyATS` and `genie` to check the current OS version, and that an OS 
 ## Installing the requirements
 ```bash
 pip install -r requirements.txt
+touch sqlite/db/checks.db
+python sqlite/init_database.py
 ```
 
 ## Using the script

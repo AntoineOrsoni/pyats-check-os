@@ -1,0 +1,11 @@
+| hostname | test_name | output   | timestamp           |
+| -------- | --------- | -------- | ------------------- |
+| ASR903_5 | route     | { json } | 2020-11-17 11:47:12 |
+
+Possible test_name:
+    - route_summary > JSON
+    - routes        > JSON
+    - isis          > JSON
+    - xconnect      > JSON
+    - os_version    > string
+    - os_copied     > boolean
