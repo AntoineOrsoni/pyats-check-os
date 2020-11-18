@@ -8,6 +8,27 @@ def result_isis():
 def result_all():
     pass
 
+###
+### CHECKING
+###
+
+# Returns True if the target OS is copied on the device
+def os_copied(hostname, os_target, when_tested):
+
+    # Sample output
+    # ASR903_5    os_copied   True        2020-11-18 13:07:57
+    return db.get_output_test(hostname, "os_copied", when_tested)[2]
+
+# Returns the current os_version on the device
+def os_version(hostname, when_tested):
+
+    # Sample output
+    # ASR903_5    os_version  16.10.1     2020-11-18 13:37:56
+    return db.get_output_test(hostname, "os_version", when_tested)[2]
+
+### 
+### SAVING OUTPUTS IN THE DB
+###
 
 # Save in the DB the `show ip route summary`
 def save_route_summary_db(device, when_tested, current_time):
