@@ -87,7 +87,7 @@ class CheckOperData(aetest.Testcase):
     @aetest.test
     def check_os_current_version_device(self, testbed):
 
-        logger.info("Checking that each device is using 16.10.1")
+        logger.info(f"Checking that each device is using {os_target_version}")
 
         not_compliant = []
 

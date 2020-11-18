@@ -67,8 +67,9 @@ def get_list_outputs_device(hostname, when_tested):
     return db_cursor.fetchall()
 
 
-# Return the output for a specific test, oldest timestamp
-def get_output_test(hostname, test_name, when_tested):
+# Return the output for a specific test, oldest timestamp -- The entire line
+# ASR903_5    os_version  16.10.1     2020-11-18 16:21:43
+def get_output_line(hostname, test_name, when_tested):
 
     timestamp = get_oldest_timestamp(hostname, when_tested)
 
@@ -79,6 +80,20 @@ def get_output_test(hostname, test_name, when_tested):
                             WHERE hostname = (?) AND timestamp = (?) AND test_name = (?)''', filter_tuple)
 
     return db_cursor.fetchone() 
+
+
+# Return the output for a specific test, oldest timestamp -- Only the `output` of the `test_name`
+def get_output_test(hostname, test_name, when_tested):
+
+    timestamp = get_oldest_timestamp(hostname, when_tested)
+
+    filter_tuple = []
+    filter_tuple.extend((hostname, timestamp, test_name))   
+
+    db_cursor.execute('''   SELECT * FROM outputs
+                            WHERE hostname = (?) AND timestamp = (?) AND test_name = (?)''', filter_tuple)
+
+    return db_cursor.fetchone()[2] 
 
 
 # Print all lines from table `outputs`
