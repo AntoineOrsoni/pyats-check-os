@@ -61,7 +61,7 @@ class CheckSaveDatabase(aetest.Testcase):
         logger.info("Checking that all the outputs are saved in the DB for each device.")
 
         for device in testbed:
-            outputs_list = db.get_list_outputs_device(device.name, when_tested)
+            outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
             if len(outputs_list) != 6: self.failed(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")

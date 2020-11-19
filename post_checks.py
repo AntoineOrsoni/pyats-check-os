@@ -35,13 +35,21 @@ class CommonSetup(aetest.CommonSetup):
 
         logger.info("Verifying that I can connect to each device.")
 
+        not_compliant = []
+
         for device in testbed:
             # don't do the default show version
             # don't do the default config
             device.connect(init_exec_commands=[],
                            init_config_commands=[],
                            log_stdout=False)
-        
+                           
+            if device.is_connected() == False: 
+                not_compliant.append(device.name)
+                logger.info(f"Can't connect to {device.name}")
+
+        if len(not_compliant) != 0: self.failed(f"Could not connect to the above devices.")
+
 
     @aetest.subsection
     def save_all_outputs_db(self, testbed, current_time):
@@ -64,18 +72,22 @@ class CheckSaveDatabase(aetest.Testcase):
         logger.info("Checking that all the outputs are saved in the DB for each device.")
 
         for device in testbed:
-            outputs_list = db.get_list_outputs_device(device.name, when_tested)
+            outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 6: self.failed(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
+            if len(outputs_list) != 6: self.failed(f"output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
 
-    # - route_summary > JSON
-    # - routes        > JSON
-    # - isis          > JSON
-    # - xconnect      > JSON
-    # - os_version    > string
-    # - os_copied     > boolean
+# - route_summary > JSON
+#   - bgp                   DONE
+#   - isis
+#   - internal
+#   - connected
+# - routes        > JSON    DONE
+# - isis          > JSON    DONE
+# - xconnect      > JSON
+# - os_version    > string  DONE
+# - os_copied     > boolean DONE
 
 class CheckOperData(aetest.Testcase):
 
@@ -98,7 +110,7 @@ class CheckOperData(aetest.Testcase):
 
 
     @aetest.test
-    def check_isis_differences(self, testbed):
+    def check_isis_neighbors_differences(self, testbed):
 
         test_name = "isis"
         logger.info(f"Checking the differences before/after for {test_name}.")
@@ -125,7 +137,7 @@ class CheckRoutesBgp(aetest.Testcase):
     @aetest.test
     def check_routes_bgp_default(self, testbed):
 
-        test_name = "routes_summary"
+        test_name = "route_summary"
         logger.info(f"Checking the differences before/after for {test_name}.")
 
         protocol = "bgp"
@@ -161,7 +173,7 @@ class CheckRoutesBgp(aetest.Testcase):
     @aetest.test
     def check_routes_bgp_sfr(self, testbed):
         
-        test_name = "routes_summary"
+        test_name = "route_summary"
         logger.info(f"Checking the differences before/after for {test_name}.")
 
         protocol = "bgp"
@@ -197,7 +209,7 @@ class CheckRoutesBgp(aetest.Testcase):
     @aetest.test
     def check_routes_bgp_bytel(self, testbed):
         
-        test_name = "routes_summary"
+        test_name = "route_summary"
         logger.info(f"Checking the differences before/after for {test_name}.")
 
         protocol = "bgp"
