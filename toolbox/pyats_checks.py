@@ -123,24 +123,34 @@ def get_routes_before_after(hostname, protocol, vrf):
     output_before = json.loads(db.get_output_test(hostname, "route_summary", "before"))
     output_after = json.loads(db.get_output_test(hostname, "route_summary", "before"))
 
+    ## BGP
     if protocol == "bgp":
-        route_type = output_before['vrf'][vrf]['route_source'][protocol]
+        route_source = output_before['vrf'][vrf]['route_source'][protocol]
         
-        for as_number in route_type:
-            number_routes_before =  route_type[as_number]['external'] \
-                                    + route_type[as_number]['internal'] \
-                                    + route_type[as_number]['subnets'] \
-                                    + route_type[as_number]['networks']
+        for as_number in route_source:
+            number_routes_before = route_source[as_number]['networks']
 
-        route_type = output_after['vrf'][vrf]['route_source'][protocol]
+        route_source = output_after['vrf'][vrf]['route_source'][protocol]
 
-        for as_number in route_type:
-            number_routes_after =  route_type[as_number]['external'] \
-                                    + route_type[as_number]['internal'] \
-                                    + route_type[as_number]['subnets'] \
-                                    + route_type[as_number]['networks']
+        for as_number in route_source:
+            number_routes_after = route_source[as_number]['networks']
 
         return (number_routes_before, number_routes_after)
+
+    ## ISIS
+    if protocol == "isis":
+        route_source = output_before['vrf'][vrf]['route_source'][protocol]
+
+        for tag in route_source:
+            number_routes_before = route_source[tag]['networks']
+
+        route_source = output_after['vrf'][vrf]['route_source'][protocol]
+
+        for tag in route_source:
+            number_routes_after = route_source[tag]['networks']
+
+        return (number_routes_before, number_routes_after)
+
 
 # Checks if the VRF exists before/after
 def vrf_exists(hostname, vrf_to_check):
