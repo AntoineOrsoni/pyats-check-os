@@ -14,6 +14,7 @@ os_target_version = "16.12.4"
 
 # Delta
 isis_neighbors_delta = 0.8    # They have to be [80%-100%] similar
+xconnect_delta = 0.8
 routes_delta = 0.8
 
 # - route_summary > JSON    DONE
@@ -140,7 +141,21 @@ class CheckOperData(aetest.Testcase):
 
     @aetest.test
     def check_xconnect_differences(self, testbed):
-        pass
+        
+        test_name = "xconnect"
+        logger.info(f"Checking the differences before/after for {test_name}.")
+
+        not_compliant = []
+
+        for device in testbed:
+            xconnect_number = check.get_xconnect_before_after(device.name)
+
+            # If we have less than 80% similarity in one way OR another, something is wrong
+            if (xconnect_number[0] < xconnect_number[1] * xconnect_delta) or (xconnect_number[1] < xconnect_number[0] * xconnect_delta):
+                not_compliant.append(device.name)
+                logger.info(f"{device.name} number of xconnect UP is less than {xconnect_delta*100}% similar before/after.")                    
+
+        if len(not_compliant) != 0: self.failed(f"The above devices have a number of xconnect UP exceeding the threshold.")
 
 
 @aetest.loop(protocol = ["bgp", "isis", "connected", "internal"])

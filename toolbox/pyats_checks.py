@@ -105,9 +105,11 @@ def save_os_current_version_db(device, when_tested, current_time):
 ###
 
 # Returns the number of neighbors before/after
+# Returns a tuple of 2 integers 
+# (number_neighbors_before, number_neighbors_after)
 def get_isis_before_after(hostname):
     output_before = json.loads(db.get_output_test(hostname, "isis", "before"))
-    output_after = json.loads(db.get_output_test(hostname, "isis", "before"))
+    output_after = json.loads(db.get_output_test(hostname, "isis", "after"))
 
     for tag in output_before['isis']:
         number_neighbors_before = len(output_before['isis'][tag]['neighbors'])
@@ -119,9 +121,11 @@ def get_isis_before_after(hostname):
 
 
 # Returns the number of routes before/after for a specific protocol and vrf
+# Returns a tuple of 2 integers 
+# (number_routes_before, number_routes_after)
 def get_routes_before_after(hostname, protocol, vrf): 
     output_before = json.loads(db.get_output_test(hostname, "route_summary", "before"))
-    output_after = json.loads(db.get_output_test(hostname, "route_summary", "before"))
+    output_after = json.loads(db.get_output_test(hostname, "route_summary", "after"))
 
     ## BGP
     if protocol == "bgp":
@@ -172,15 +176,45 @@ def get_routes_before_after(hostname, protocol, vrf):
         return (number_routes_before, number_routes_after)       
 
 # Checks if the VRF exists before/after
+# Returns a tuple of 2 booleans 
+# (vrf_exists_before, vrf_exists_after)
 def vrf_exists(hostname, vrf_to_check):
 
     vrf_exists_before = False
     vrf_exists_after = False
 
     output_before = json.loads(db.get_output_test(hostname, "route_summary", "before"))
-    output_after = json.loads(db.get_output_test(hostname, "route_summary", "before"))
+    output_after = json.loads(db.get_output_test(hostname, "route_summary", "after"))
 
     if vrf_to_check in output_before['vrf']:    vrf_exists_before = True
     if vrf_to_check in output_after['vrf']:     vrf_exists_after = True
 
     return(vrf_exists_before, vrf_exists_after)
+
+
+# Returns the number of neighbors before/after
+# Returns a tuple of 2 integers 
+# (number_xconnect_before, number_xconnect_after)
+def get_xconnect_before_after(hostname):
+    
+    number_xconnect_before = 0
+    number_xconnect_after = 0
+
+    output_before = json.loads(db.get_output_test(hostname, "xconnect", "before"))
+    output_after = json.loads(db.get_output_test(hostname, "xconnect", "after"))
+
+    for segment_1 in output_before['segment_1']:
+        for segment_2 in output_before['segment_1'][segment_1]['segment_2']:
+
+            # If the xconnect is UP, increment number_xconnect
+            if output_before['segment_1'][segment_1]['segment_2'][segment_2]['xc'] == 'UP':
+                number_xconnect_before +=1
+
+    for segment_1 in output_after['segment_1']:
+        for segment_2 in output_after['segment_1'][segment_1]['segment_2']:
+
+            # If the xconnect is UP, increment number_xconnect
+            if output_after['segment_1'][segment_1]['segment_2'][segment_2]['xc'] == 'UP':
+                number_xconnect_after +=1      
+
+    return (number_xconnect_before, number_xconnect_after)
