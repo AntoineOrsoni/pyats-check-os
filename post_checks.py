@@ -17,16 +17,6 @@ isis_neighbors_delta = 0.8    # They have to be [80%-100%] similar
 xconnect_delta = 0.8
 routes_delta = 0.8
 
-# - route_summary > JSON    DONE
-#   - bgp                   DONE
-#   - isis                  DONE
-#   - internal              DONE
-#   - connected             DONE
-# - routes        > JSON    DONE
-# - isis          > JSON    DONE
-# - xconnect      > JSON
-# - os_version    > string  DONE
-# - os_copied     > boolean DONE
 
 class CommonSetup(aetest.CommonSetup):
     
