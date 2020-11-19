@@ -133,11 +133,11 @@ class CheckOperData(aetest.Testcase):
         pass
 
 
-@aetest.loop(protocol = ["bgp", "isis"])
+@aetest.loop(protocol = ["bgp", "isis", "connected", "internal"])
 class CheckRoutes(aetest.Testcase):
 
     @aetest.test.loop(vrf=["default", "Bytel", "Mcast-SFR"])
-    def check_routes(self, testbed, protocol, vrf):
+    def check_routes_delta_before_after(self, testbed, protocol, vrf):
 
         test_name = "route_summary"
         logger.info(f"Checking the differences before/after for {test_name}.")

@@ -128,12 +128,12 @@ def get_routes_before_after(hostname, protocol, vrf):
         route_source = output_before['vrf'][vrf]['route_source'][protocol]
         
         for as_number in route_source:
-            number_routes_before = route_source[as_number]['networks']
+            number_routes_before = route_source[as_number]['subnets']
 
         route_source = output_after['vrf'][vrf]['route_source'][protocol]
 
         for as_number in route_source:
-            number_routes_after = route_source[as_number]['networks']
+            number_routes_after = route_source[as_number]['subnets']
 
         return (number_routes_before, number_routes_after)
 
@@ -142,15 +142,34 @@ def get_routes_before_after(hostname, protocol, vrf):
         route_source = output_before['vrf'][vrf]['route_source'][protocol]
 
         for tag in route_source:
-            number_routes_before = route_source[tag]['networks']
+            number_routes_before = route_source[tag]['subnets']
 
         route_source = output_after['vrf'][vrf]['route_source'][protocol]
 
         for tag in route_source:
-            number_routes_after = route_source[tag]['networks']
+            number_routes_after = route_source[tag]['subnets']
 
         return (number_routes_before, number_routes_after)
 
+    ## Connected
+    if protocol == "connected":
+        route_source = output_before['vrf'][vrf]['route_source'][protocol]
+        number_routes_before = route_source['subnets']
+
+        route_source = output_after['vrf'][vrf]['route_source'][protocol]
+        number_routes_after = route_source['subnets']
+
+        return (number_routes_before, number_routes_after)    
+
+    ## Internal -- For internal we take `networks` not `subnets` (doesn't exist)
+    if protocol == "internal":
+        route_source = output_before['vrf'][vrf]['route_source'][protocol]
+        number_routes_before = route_source['networks']
+
+        route_source = output_after['vrf'][vrf]['route_source'][protocol]
+        number_routes_after = route_source['networks']
+
+        return (number_routes_before, number_routes_after)       
 
 # Checks if the VRF exists before/after
 def vrf_exists(hostname, vrf_to_check):
