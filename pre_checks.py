@@ -3,6 +3,7 @@ from pyats import aetest
 import logging
 import toolbox.database as db
 import toolbox.pyats_checks as check
+import unicon
 
 logger = logging.getLogger(__name__)
 
@@ -32,11 +33,18 @@ class CommonSetup(aetest.CommonSetup):
         logger.info("Verifying that I can connect to each device.")
 
         for device in testbed:
-            # don't do the default show version
-            # don't do the default config
-            device.connect(init_exec_commands=[],
-                           init_config_commands=[],
-                           log_stdout=False)
+
+            # Try if I can connect to the device.
+            try:
+                device.connect( init_exec_commands=[],
+                                init_config_commands=[],
+                                log_stdout=False)
+
+            except ConnectionError as e:
+                logger.error(f"Could not connect to device {device.name}.")
+                not_compliant.append(device.name)
+             
+        if len(not_compliant) != 0: self.failed(f"Could not connect to the above devices.")
         
 
     @aetest.subsection

@@ -3,6 +3,7 @@ from pyats import aetest
 import logging
 import toolbox.database as db
 import toolbox.pyats_checks as check
+from unicon.core.errors import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,17 @@ os_target_version = "16.12.4"
 # Delta
 isis_neighbors_delta = 0.8    # They have to be [80%-100%] similar
 routes_delta = 0.8
+
+# - route_summary > JSON    DONE
+#   - bgp                   DONE
+#   - isis                  DONE
+#   - internal              DONE
+#   - connected             DONE
+# - routes        > JSON    DONE
+# - isis          > JSON    DONE
+# - xconnect      > JSON
+# - os_version    > string  DONE
+# - os_copied     > boolean DONE
 
 class CommonSetup(aetest.CommonSetup):
     
@@ -38,16 +50,17 @@ class CommonSetup(aetest.CommonSetup):
         not_compliant = []
 
         for device in testbed:
-            # don't do the default show version
-            # don't do the default config
-            device.connect(init_exec_commands=[],
-                           init_config_commands=[],
-                           log_stdout=False)
-                           
-            if device.is_connected() == False: 
-                not_compliant.append(device.name)
-                logger.info(f"Can't connect to {device.name}")
 
+            # Try if I can connect to the device.
+            try:
+                device.connect( init_exec_commands=[],
+                                init_config_commands=[],
+                                log_stdout=False)
+
+            except ConnectionError as e:
+                logger.error(f"Could not connect to device {device.name}.")
+                not_compliant.append(device.name)
+             
         if len(not_compliant) != 0: self.failed(f"Could not connect to the above devices.")
 
 
@@ -64,6 +77,7 @@ class CommonSetup(aetest.CommonSetup):
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
 
+
 class CheckSaveDatabase(aetest.Testcase):
 
     @aetest.test
@@ -77,17 +91,6 @@ class CheckSaveDatabase(aetest.Testcase):
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
             if len(outputs_list) != 6: self.failed(f"output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
-
-# - route_summary > JSON
-#   - bgp                   DONE
-#   - isis
-#   - internal
-#   - connected
-# - routes        > JSON    DONE
-# - isis          > JSON    DONE
-# - xconnect      > JSON
-# - os_version    > string  DONE
-# - os_copied     > boolean DONE
 
 class CheckOperData(aetest.Testcase):
 
