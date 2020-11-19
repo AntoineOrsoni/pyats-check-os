@@ -3,7 +3,7 @@ from pyats import aetest
 import logging
 import toolbox.database as db
 import toolbox.pyats_checks as check
-import unicon
+from unicon.core.errors import ConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +27,13 @@ class CommonSetup(aetest.CommonSetup):
             for device in testbed.devices:
                 logger.info('  - {device}'.format(device=device))
 
+
     @aetest.subsection
     def connect_to_devices(self, testbed):
 
         logger.info("Verifying that I can connect to each device.")
+
+        not_compliant = []
 
         for device in testbed:
 
@@ -41,10 +44,16 @@ class CommonSetup(aetest.CommonSetup):
                                 log_stdout=False)
 
             except ConnectionError as e:
-                logger.error(f"Could not connect to device {device.name}.")
                 not_compliant.append(device.name)
+                logger.error(f"Could not connect to device {device.name}.")
              
-        if len(not_compliant) != 0: self.failed(f"Could not connect to the above devices.")
+        if len(not_compliant) != 0: 
+
+            # Removing the devices from the testbed, if I can't connect
+            for device_name in not_compliant:
+                
+                testbed.devices.pop(device_name)
+                logger.error(f"{device_name} has been removed from the testbed.")
         
 
     @aetest.subsection
@@ -52,6 +61,7 @@ class CommonSetup(aetest.CommonSetup):
 
         logger.info("Saving outputs for each device.")
 
+        # for device in (device for device in testbed if device.is_connected() == True):
         for device in testbed:
             check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)

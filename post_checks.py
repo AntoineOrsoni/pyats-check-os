@@ -42,6 +42,7 @@ class CommonSetup(aetest.CommonSetup):
             for device in testbed.devices:
                 logger.info('  - {device}'.format(device=device))
 
+
     @aetest.subsection
     def connect_to_devices(self, testbed):
 
@@ -58,10 +59,16 @@ class CommonSetup(aetest.CommonSetup):
                                 log_stdout=False)
 
             except ConnectionError as e:
-                logger.error(f"Could not connect to device {device.name}.")
                 not_compliant.append(device.name)
+                logger.error(f"Could not connect to device {device.name}.")
              
-        if len(not_compliant) != 0: self.failed(f"Could not connect to the above devices.")
+        if len(not_compliant) != 0: 
+
+            # Removing the devices from the testbed, if I can't connect
+            for device_name in not_compliant:
+                
+                testbed.devices.pop(device_name)
+                logger.error(f"{device_name} has been removed from the testbed.")
 
 
     @aetest.subsection
@@ -155,10 +162,10 @@ class CheckRoutes(aetest.Testcase):
             vrf_exists = check.vrf_exists(device.name, vrf)
             if (vrf_exists[0] == False): 
                 not_compliant_before.append(device.name)
-                logger.info(f"{device.name} does not have VRF {vrf} in the pre_check.")
+                logger.error(f"{device.name} does not have VRF {vrf} in the pre_check.")
             if (vrf_exists[1] == False): 
                 not_compliant_after.append(device.name)
-                logger.info(f"{device.name} does not have VRF {vrf} in the post_check.")
+                logger.error(f"{device.name} does not have VRF {vrf} in the post_check.")
 
             # If the VRF exists in both, I can compare
             if (vrf_exists[0] == True) and (vrf_exists[1] == True):
@@ -167,7 +174,7 @@ class CheckRoutes(aetest.Testcase):
                 # If we have less than 80% similarity in one way OR another, something is wrong
                 if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
                     not_compliant_delta.append(device.name)
-                    logger.info(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+                    logger.error(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
 
         if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
             self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
