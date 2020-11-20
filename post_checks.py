@@ -74,7 +74,8 @@ class CommonSetup(aetest.CommonSetup):
 
         logger.info("Saving outputs for each device.")
 
-        for device in testbed:
+        # Only if I could connect to the device
+        for device in (device for device in testbed if device.test_results['connect_device'] == 'Pass'):
             check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
             check.save_route_summary_db(device, when_tested, current_time)
@@ -90,7 +91,8 @@ class CheckSaveDatabase(aetest.Testcase):
         
         logger.info("Checking that all the outputs are saved in the DB for each device.")
         
-        for device in testbed:
+        # Only if I could connect to the device
+        for device in (device for device in testbed if device.test_results['connect_device'] == 'Pass'):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
 
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
@@ -110,16 +112,24 @@ class CheckOperData(aetest.Testcase):
         not_compliant = []
 
         for device in testbed:
-            os_version = check.os_version(device.name, when_tested)
-            check.add_result_device(device, test_name, "Pass")
 
-            # If OS version on the device is wrong, add it to the list
-            if os_version != os_target_version: 
-                not_compliant.append(device.name)
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
                 check.add_result_device(device, test_name, "Fail")
-                logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
 
-        if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
+                os_version = check.os_version(device.name, when_tested)
+                check.add_result_device(device, test_name, "Pass")
+
+                # If OS version on the device is wrong, add it to the list
+                if os_version != os_target_version: 
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
+
+            if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
 
     @aetest.test
@@ -132,14 +142,21 @@ class CheckOperData(aetest.Testcase):
         not_compliant = []
 
         for device in testbed:
-            neighbors_number = check.get_isis_before_after(device.name)
-            check.add_result_device(device, test_name, "Pass")
 
-            # If we have less than 80% similarity in one way OR another, something is wrong
-            if (neighbors_number[0] < neighbors_number[1] * isis_neighbors_delta) or (neighbors_number[1] < neighbors_number[0] * isis_neighbors_delta):
-                not_compliant.append(device.name)
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
                 check.add_result_device(device, test_name, "Fail")
-                logger.info(f"{device.name} number of isis neighbors is less than {isis_neighbors_delta*100}% similar before/after.")                    
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+                neighbors_number = check.get_isis_before_after(device.name)
+                check.add_result_device(device, test_name, "Pass")
+
+                # If we have less than 80% similarity in one way OR another, something is wrong
+                if (neighbors_number[0] < neighbors_number[1] * isis_neighbors_delta) or (neighbors_number[1] < neighbors_number[0] * isis_neighbors_delta):
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.info(f"{device.name} number of isis neighbors is less than {isis_neighbors_delta*100}% similar before/after.")                    
 
         if len(not_compliant) != 0: self.failed(f"The above devices have a number of isis neighbors exceeding the threshold.")
 
@@ -154,14 +171,21 @@ class CheckOperData(aetest.Testcase):
         not_compliant = []
 
         for device in testbed:
-            xconnect_number = check.get_xconnect_before_after(device.name)
-            check.add_result_device(device, test_name, "Pass")
 
-            # If we have less than 80% similarity in one way OR another, something is wrong
-            if (xconnect_number[0] < xconnect_number[1] * xconnect_delta) or (xconnect_number[1] < xconnect_number[0] * xconnect_delta):
-                not_compliant.append(device.name)
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
                 check.add_result_device(device, test_name, "Fail")
-                logger.info(f"{device.name} number of xconnect UP is less than {xconnect_delta*100}% similar before/after.")                    
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+                xconnect_number = check.get_xconnect_before_after(device.name)
+                check.add_result_device(device, test_name, "Pass")
+
+                # If we have less than 80% similarity in one way OR another, something is wrong
+                if (xconnect_number[0] < xconnect_number[1] * xconnect_delta) or (xconnect_number[1] < xconnect_number[0] * xconnect_delta):
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.info(f"{device.name} number of xconnect UP is less than {xconnect_delta*100}% similar before/after.")                    
 
         if len(not_compliant) != 0: self.failed(f"The above devices have a number of xconnect UP exceeding the threshold.")
 
@@ -183,28 +207,35 @@ class CheckRoutes(aetest.Testcase):
 
         for device in testbed:
 
-            check.add_result_device(device, test_name, "Pass")
-
-            # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
-            vrf_exists = check.vrf_exists(device.name, vrf)
-            if (vrf_exists[0] == False): 
-                not_compliant_before.append(device.name)
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
                 check.add_result_device(device, test_name, "Fail")
-                logger.error(f"{device.name} does not have VRF {vrf} in the pre_check.")
-            if (vrf_exists[1] == False): 
-                not_compliant_after.append(device.name)
-                check.add_result_device(device, test_name, "Fail")
-                logger.error(f"{device.name} does not have VRF {vrf} in the post_check.")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
 
-            # If the VRF exists in both, I can compare
-            if (vrf_exists[0] == True) and (vrf_exists[1] == True):
-                routes_number = check.get_routes_before_after(device.name, protocol, vrf)
+                check.add_result_device(device, test_name, "Pass")
 
-                # If we have less than 80% similarity in one way OR another, something is wrong
-                if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
-                    not_compliant_delta.append(device.name)
-                    # check.add_result_device(device, test_name, "Fail")
-                    logger.error(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
+                # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
+                vrf_exists = check.vrf_exists(device.name, vrf)
+                if (vrf_exists[0] == False): 
+                    not_compliant_before.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.error(f"{device.name} does not have VRF {vrf} in the pre_check.")
+                if (vrf_exists[1] == False): 
+                    not_compliant_after.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.error(f"{device.name} does not have VRF {vrf} in the post_check.")
+
+                # If the VRF exists in both, I can compare
+                if (vrf_exists[0] == True) and (vrf_exists[1] == True):
+                    routes_number = check.get_routes_before_after(device.name, protocol, vrf)
+
+                    # If we have less than 80% similarity in one way OR another, something is wrong
+                    if (routes_number[0] < routes_number[1] * routes_delta) or (routes_number[1] < routes_number[0] * routes_delta):
+                        not_compliant_delta.append(device.name)
+                        # check.add_result_device(device, test_name, "Fail")
+                        logger.error(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
 
         if len(not_compliant_before) + len(not_compliant_after) + len(not_compliant_delta) != 0:
             self.failed(f"Test failed. VRF missing or too many routes difference ({routes_delta*100}%). See logs above.")
@@ -247,4 +278,7 @@ if __name__ == '__main__':
 
     aetest.main(testbed = testbed, current_time = current_time)
 
-    print("end")
+    # Adding two blank lines for formatting
+    logger.info("")
+    logger.info("")
+    logger.info(check.table_results(testbed))

@@ -1,6 +1,7 @@
 from genie.testbed import load
 import toolbox.database as db
 import json
+from prettytable import PrettyTable
 
 ###
 ### CHECKING
@@ -234,3 +235,60 @@ def get_xconnect_before_after(hostname):
                 number_xconnect_after +=1      
 
     return (number_xconnect_before, number_xconnect_after)
+
+
+###
+### RESULTS
+###
+
+def table_results(testbed):
+
+    table = PrettyTable()
+    
+    ## BUILDING THE HEADER
+    # | Hostname | Test1 | Test2 |...
+    table_header = ["Hostname"]
+
+    for test in testbed.tests_run:
+
+        if isinstance(test, dict): 
+
+            for key, value in test.items():  
+
+                if key not in table_header: 
+                    table_header.append(key)
+
+        if isinstance(test, str):
+            table_header.append(test)
+
+    table.field_names = table_header
+
+    ## BUILDING THE LINES
+    # We can make another loop here. The `testbed.tests_run` tests and
+    # `device.test_results` tests will be in the same order. They are added at the same time.
+    for device in testbed:
+
+        # | Hostname | Test1_result | Test2_result |
+        table_line = [device.name]
+
+        for test, result in device.test_results.items():
+
+            # If the result is a dict, compare the sub-tests results. 
+            # If one of them fails, the test fails.
+            if isinstance(result, dict):
+
+                # By default, assume Pass
+                end_result = "Pass"
+
+                # Prove me wrong
+                for sub_test, sub_result in result.items():
+                    if sub_result == "Fail": end_result = "Fail"
+
+                table_line.append(end_result)
+            
+            if isinstance(result, str): 
+                table_line.append(result)
+
+        table.add_row(table_line)
+
+    return str(table)
