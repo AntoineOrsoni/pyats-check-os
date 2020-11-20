@@ -65,7 +65,15 @@ def get_list_outputs_device(hostname, when_tested, timestamp):
     db_cursor.execute('''   SELECT * FROM outputs
                             WHERE hostname = (?) AND timestamp = (?)''', filter_tuple)
     
-    return db_cursor.fetchall()
+    output = db_cursor.fetchall()
+
+    # Verify we've been able to get an output which is not empty
+    if output is not None:
+        return output
+    else:
+        raise ValueError(   f"output is empty. Check we have an output for :\n"
+                            f"   - hostname = {hostname},\n"
+                            f"   - timestamp = {timestamp}")
 
 
 # Return the output for a specific test, oldest timestamp -- The entire line
@@ -81,7 +89,16 @@ def get_output_line(hostname, test_name, when_tested):
     db_cursor.execute('''   SELECT * FROM outputs
                             WHERE hostname = (?) AND timestamp = (?) AND test_name = (?)''', filter_tuple)
 
-    return db_cursor.fetchone() 
+    output = db_cursor.fetchone()
+
+    # Verify we've been able to get an output which is not empty
+    if output is not None:
+        return output
+    else:
+        raise ValueError(   f"output is empty. Check we have an output for :\n"
+                            f"   - hostname = {hostname},\n"
+                            f"   - test_name = {test_name},\n"
+                            f"   - timestamp = {timestamp}") 
 
 
 # Return the output for a specific test, oldest timestamp -- Only the `output` of the `test_name`
@@ -98,8 +115,16 @@ def get_output_test(hostname, test_name, when_tested):
                             WHERE hostname = (?) AND timestamp = (?) AND test_name = (?)''', filter_tuple)
 
     output = db_cursor.fetchone()[2]
-    return output
 
+    # Verify we've been able to get an output which is not empty
+    if output is not None:
+        return output
+    else:
+        raise ValueError(   f"output is empty. Check we have an output for :\n"
+                            f"   - hostname = {hostname},\n"
+                            f"   - test_name = {test_name},\n"
+                            f"   - timestamp = {timestamp}")
+    
 
 # Print all lines from table `outputs`
 def print_outputs():
