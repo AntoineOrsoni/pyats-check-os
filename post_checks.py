@@ -258,8 +258,6 @@ if __name__ == '__main__':
     parser.add_argument('--testbed', dest='testbed', default='/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/testbed.yaml', help = '/link/to/testbed.yaml')
     args, sys.argv[1:] = parser.parse_known_args(sys.argv[1:])
 
-    ## TODO verify arguments has been given
-
     testbed = load(args.testbed)
     
     # List of tests_run
