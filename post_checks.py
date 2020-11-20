@@ -41,8 +41,6 @@ class CommonSetup(aetest.CommonSetup):
         test_name = "connect_device"
         testbed.tests_run.append(test_name)
 
-        not_compliant = []
-
         for device in testbed:
 
             # Tracking each device.test_result
@@ -56,17 +54,8 @@ class CommonSetup(aetest.CommonSetup):
                 check.add_result_device(device, test_name, "Pass")
 
             except ConnectionError as e:
-                not_compliant.append(device.name)
                 check.add_result_device(device, test_name, "Fail")
                 logger.error(f"Could not connect to device {device.name}.")
-
-        if len(not_compliant) != 0: 
-
-            # Removing the devices from the testbed, if I can't connect
-            for device_name in not_compliant:
-                
-                testbed.devices.pop(device_name)
-                logger.error(f"{device_name} has been removed from the testbed.")
 
 
     @aetest.subsection
