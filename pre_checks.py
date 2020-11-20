@@ -32,28 +32,24 @@ class CommonSetup(aetest.CommonSetup):
     def connect_to_devices(self, testbed):
 
         logger.info("Verifying that I can connect to each device.")
-
-        not_compliant = []
+        test_name = "connect_device"
+        testbed.tests_run.append(test_name)
 
         for device in testbed:
+
+            # Tracking each device.test_result
+            device.test_results = {}
 
             # Try if I can connect to the device.
             try:
                 device.connect( init_exec_commands=[],
                                 init_config_commands=[],
-                                log_stdout=False)
+                                log_stdout=False) 
+                check.add_result_device(device, test_name, "Pass")
 
             except ConnectionError as e:
-                not_compliant.append(device.name)
+                check.add_result_device(device, test_name, "Fail")
                 logger.error(f"Could not connect to device {device.name}.")
-             
-        if len(not_compliant) != 0: 
-
-            # Removing the devices from the testbed, if I can't connect
-            for device_name in not_compliant:
-                
-                testbed.devices.pop(device_name)
-                logger.error(f"{device_name} has been removed from the testbed.")
         
 
     @aetest.subsection
@@ -61,8 +57,8 @@ class CommonSetup(aetest.CommonSetup):
 
         logger.info("Saving outputs for each device.")
 
-        # for device in (device for device in testbed if device.is_connected() == True):
-        for device in testbed:
+        # Only if I could connect to the device
+        for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
             check.save_route_summary_db(device, when_tested, current_time)
@@ -78,7 +74,8 @@ class CheckSaveDatabase(aetest.Testcase):
         
         logger.info("Checking that all the outputs are saved in the DB for each device.")
 
-        for device in testbed:
+        # Only if I could connect to the device
+        for device in (device for device in testbed if device.is_connected() == True):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
@@ -91,32 +88,59 @@ class CheckOperData(aetest.Testcase):
     @aetest.test
     def check_os_copied_device(self, testbed):
 
+        test_name = "os_copied"
+        testbed.tests_run.append(test_name)
         logger.info("Checking that the OS is copied on each device bootflash:/")
         
         not_compliant = []
 
         for device in testbed:
-            # If OS is not copied, add its name to the list
-            if check.os_copied(device.name, os_target_filename, when_tested) != "True": 
-                not_compliant.append(device.name)
-                logger.info(f"{os_target_filename} is not copied on {device.name}.")
+
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
+                check.add_result_device(device, test_name, "Fail")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+
+                # Assume the test Pass
+                check.add_result_device(device, test_name, "Pass")
+            
+                # If OS is not copied, add its name to the list
+                if check.os_copied(device.name, os_target_filename, when_tested) != "True": 
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.info(f"{os_target_filename} is not copied on {device.name}.")
 
         if len(not_compliant) != 0: self.failed(f"{os_target_filename} is not copied on the above devices.")
+
 
     @aetest.test
     def check_os_current_version_device(self, testbed):
 
+        test_name = os_target_version
+        testbed.tests_run.append(test_name)
         logger.info(f"Checking that each device is using {os_target_version}")
 
         not_compliant = []
 
         for device in testbed:
-            os_version = check.os_version(device.name, when_tested)
 
-            # If OS version on the device is wrong, add it to the list
-            if os_version != os_target_version: 
-                not_compliant.append(device.name)
-                logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
+                check.add_result_device(device, test_name, "Fail")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+
+                os_version = check.os_version(device.name, when_tested)
+                check.add_result_device(device, test_name, "Pass")
+
+                # If OS version on the device is wrong, add it to the list
+                if os_version != os_target_version: 
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
         if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
@@ -149,8 +173,14 @@ if __name__ == '__main__':
     parser.add_argument('--testbed', dest='testbed', default='/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/testbed.yaml', help = '/link/to/testbed.yaml')
     args, sys.argv[1:] = parser.parse_known_args(sys.argv[1:])
 
-    ## TODO verify arguments has been given
-
     testbed = load(args.testbed)
 
+    # List of tests_run
+    testbed.tests_run = []
+
     aetest.main(testbed = testbed, current_time = current_time)
+
+    # Adding two blank lines for formatting
+    logger.info("")
+    logger.info("")
+    logger.info(check.table_results(testbed))

@@ -64,7 +64,7 @@ class CommonSetup(aetest.CommonSetup):
         logger.info("Saving outputs for each device.")
 
         # Only if I could connect to the device
-        for device in (device for device in testbed if device.test_results['connect_device'] == 'Pass'):
+        for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
             check.save_route_summary_db(device, when_tested, current_time)
@@ -81,7 +81,7 @@ class CheckSaveDatabase(aetest.Testcase):
         logger.info("Checking that all the outputs are saved in the DB for each device.")
         
         # Only if I could connect to the device
-        for device in (device for device in testbed if device.test_results['connect_device'] == 'Pass'):
+        for device in (device for device in testbed if device.is_connected() == True):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
 
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
@@ -118,7 +118,7 @@ class CheckOperData(aetest.Testcase):
                     check.add_result_device(device, test_name, "Fail")
                     logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
-            if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
+        if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
 
     @aetest.test
