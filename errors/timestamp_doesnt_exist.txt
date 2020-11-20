@@ -1,9 +1,0 @@
-2020-11-20T00:21:53: %AETEST-ERROR: Caught an exception while executing section check_xconnect_differences:
-2020-11-20T00:21:53: %AETEST-ERROR: Traceback (most recent call last):
-2020-11-20T00:21:53: %AETEST-ERROR:   File "/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/post_checks.py", line 158, in check_xconnect_differences
-2020-11-20T00:21:53: %AETEST-ERROR:     xconnect_number = check.get_xconnect_before_after(device.name)
-2020-11-20T00:21:53: %AETEST-ERROR:   File "/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/toolbox/pyats_checks.py", line 208, in get_xconnect_before_after
-2020-11-20T00:21:53: %AETEST-ERROR:     output_before = json.loads(db.get_output_test(hostname, "xconnect", "before"))
-2020-11-20T00:21:53: %AETEST-ERROR:   File "/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/toolbox/database.py", line 103, in get_output_test
-2020-11-20T00:21:53: %AETEST-ERROR:     output = db_cursor.fetchone()[2]
-2020-11-20T00:21:53: %AETEST-ERROR: TypeError: 'NoneType' object is not subscriptable
