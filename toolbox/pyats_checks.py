@@ -100,6 +100,22 @@ def save_os_current_version_db(device, when_tested, current_time):
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
 
+# Adding one more test to the total_number_tests
+def add_result_device(device, test_name, test_result):
+    
+    # if test_name is a string
+    if isinstance(test_name, str):
+        device.test_results[test_name] = test_result
+
+    # if test_name is a dict
+    if isinstance(test_name, dict):
+        for key, value in test_name.items():
+            # if the key does not exist
+            if key not in device.test_results.keys():
+                device.test_results[key] = {}
+
+            device.test_results[key][value] = test_result
+            
 ###
 ### COMPARING
 ###

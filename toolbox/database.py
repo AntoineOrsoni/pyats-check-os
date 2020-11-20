@@ -16,7 +16,7 @@ def add_timestamp(hostname, test_name, when_tested, current_time):
     db_connection.commit()
 
 
-# Add `output in the `outputs` table
+# Add an `output` in the `outputs` table
 def add_output(hostname, test_name, output, current_time):
 
     # Creating a `output_tuple` to insert in the `outputs` table.
@@ -29,6 +29,7 @@ def add_output(hostname, test_name, output, current_time):
     db_connection.commit()
 
 
+# Get the older timestamp for a device before or after.
 # All test from the same batch will have the same timestamp. 
 # I don't chare which test I get.
 def get_oldest_timestamp(hostname, when_tested):
@@ -68,6 +69,7 @@ def get_list_outputs_device(hostname, when_tested, timestamp):
 
 
 # Return the output for a specific test, oldest timestamp -- The entire line
+# Sample output
 # ASR903_5    os_version  16.10.1     2020-11-18 16:21:43
 def get_output_line(hostname, test_name, when_tested):
 
@@ -83,6 +85,8 @@ def get_output_line(hostname, test_name, when_tested):
 
 
 # Return the output for a specific test, oldest timestamp -- Only the `output` of the `test_name`
+# Sample output
+# 16.10.1
 def get_output_test(hostname, test_name, when_tested):
 
     timestamp = get_oldest_timestamp(hostname, when_tested)
@@ -93,7 +97,8 @@ def get_output_test(hostname, test_name, when_tested):
     db_cursor.execute('''   SELECT * FROM outputs
                             WHERE hostname = (?) AND timestamp = (?) AND test_name = (?)''', filter_tuple)
 
-    return db_cursor.fetchone()[2] 
+    output = db_cursor.fetchone()[2]
+    return output
 
 
 # Print all lines from table `outputs`
@@ -108,4 +113,3 @@ def print_timestamps():
     db_cursor.execute('''SELECT * FROM timestamps''')
     for line in db_cursor.fetchall():
         print(line)
-

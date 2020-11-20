@@ -25,7 +25,7 @@ class CommonSetup(aetest.CommonSetup):
             # Listing the devices
             logger.info('List of Devices:')
             for device in testbed.devices:
-                logger.info('  - {device}'.format(device=device))
+                logger.info(f'  - {device}')
 
 
     @aetest.subsection
@@ -81,8 +81,9 @@ class CheckSaveDatabase(aetest.Testcase):
         for device in testbed:
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
+            # If outputs not copied, ERROR, stopping the script (not doing the other tests)
             # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 6: self.failed(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
+            if len(outputs_list) != 6: self.errored(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
