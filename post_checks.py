@@ -235,7 +235,10 @@ class CommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, testbed):
         for device in testbed:
-            device.disconnect()
+
+            # Only disconnect if we are connected to the device
+            if device.is_connected() == True:
+                device.disconnect()
 
 
 if __name__ == '__main__':

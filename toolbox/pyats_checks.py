@@ -1,4 +1,5 @@
 from genie.testbed import load
+from genie.metaparser.util.exceptions import SchemaEmptyParserError
 import toolbox.database as db
 import json
 from prettytable import PrettyTable
@@ -7,7 +8,7 @@ from prettytable import PrettyTable
 ### CHECKING
 ###
 
-# Returns True if the target OS is copied on the device
+# Returns True if the target OS is copied on the device, else False
 def os_copied(hostname, os_target, when_tested):
 
     # Sample output
@@ -78,15 +79,32 @@ def save_os_copied_db(device, os_target, when_tested, current_time):
 
     test_name = "os_copied"
 
+    # List to store the names of files that have been successfully copied on the device.
+    # Will compare to len(os_target)
+    number_files_copied = []
+
     # Boolean to store if os has been copied
     # Converted as string, because I can't store booleans in the DB
     os_copied = "False" 
-    files = device.parse('dir')
 
-    for file in files['dir']['bootflash:/']['files']:
+    # Verify that the folder exists
+    try:
+        files = device.parse('dir bootflash:ImageTarget')
 
-        if file == os_target: os_copied = "True"
-    
+        for file in files['dir']['bootflash:/ImageTarget/']['files']:
+            for os in os_target:
+
+                # If we have a match
+                if file == os: 
+                    number_files_copied.append(os)
+
+        if len(number_files_copied) == len(os_target): os_copied = "True"
+
+    # If the parser is empty == the directory doesn't exist, catch the Error
+    except SchemaEmptyParserError as e:
+        # Silently discard it, test is failed by default 
+        pass
+        
     db.add_output(device.name, test_name, os_copied, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 

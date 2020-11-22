@@ -8,7 +8,17 @@ from unicon.core.errors import ConnectionError
 logger = logging.getLogger(__name__)
 
 # Variables
-os_target_filename = 'asr900rsp3-universalk9_npe.16.12.04.SPA.bin'
+os_target_filenames = [
+    "asr900rsp3-rpios-universalk9_npe.16.12.04.SPA.pkg",
+    "asr900rsp3-rpbase.16.12.04.SPA.pkg",
+    "asr900rsp3-rpaccess.16.12.04.SPA.pkg",
+    "asr900rsp3-espbase.16.12.04.SPA.pkg",
+    "packages.conf",
+    "asr900rsp3-sipspa.16.12.04.SPA.pkg",
+    "asr900rsp3-rpcontrol.16.12.04.SPA.pkg",
+    "asr900rsp3-rpboot.16.12.04.SPA.pkg",
+    "asr900rsp3-sipbase.16.12.04.SPA.pkg"
+]
 when_tested = "before"
 os_target_version = "16.10.1"
 
@@ -59,7 +69,7 @@ class CommonSetup(aetest.CommonSetup):
 
         # Only if I could connect to the device
         for device in (device for device in testbed if device.is_connected() == True):
-            check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
+            check.save_os_copied_db(device, os_target_filenames, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
             check.save_route_summary_db(device, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
@@ -107,12 +117,12 @@ class CheckOperData(aetest.Testcase):
                 check.add_result_device(device, test_name, "Pass")
             
                 # If OS is not copied, add its name to the list
-                if check.os_copied(device.name, os_target_filename, when_tested) != "True": 
+                if check.os_copied(device.name, os_target_filenames, when_tested) != "True": 
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"{os_target_filename} is not copied on {device.name}.")
+                    logger.info(f"OS files are missing on {device.name}.")
 
-        if len(not_compliant) != 0: self.failed(f"{os_target_filename} is not copied on the above devices.")
+        if len(not_compliant) != 0: self.failed(f"OS files are not copied on the above devices, or not in the right folder.")
 
 
     @aetest.test
@@ -150,7 +160,10 @@ class CommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, testbed):
         for device in testbed:
-            device.disconnect()
+
+            # Only disconnect if we are connected to the device
+            if device.is_connected() == True:
+                device.disconnect()
 
 
 if __name__ == '__main__':
