@@ -265,7 +265,7 @@ def table_results(testbed):
     
     ## BUILDING THE HEADER
     # | Hostname | Test1 | Test2 |...
-    table_header = ["Hostname"]
+    table_header = ["hostname"]
 
     for test in testbed.tests_run:
 
