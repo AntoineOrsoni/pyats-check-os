@@ -7,6 +7,8 @@ devices:                # all device definition goes under devices block
       default:                         # login credentials
         username: username
         password: password
+      enable:
+        password: enable-password
     connections:        # give the block on how to connect to its mgmt interface
       vty:
         protocol: ssh

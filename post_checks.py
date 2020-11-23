@@ -8,7 +8,6 @@ from unicon.core.errors import ConnectionError
 logger = logging.getLogger(__name__)
 
 # Variables
-os_target_filename = 'asr900rsp3-universalk9_npe.16.12.04.SPA.bin'
 when_tested = "after"
 os_target_version = "16.12.4"
 
@@ -65,7 +64,6 @@ class CommonSetup(aetest.CommonSetup):
 
         # Only if I could connect to the device
         for device in (device for device in testbed if device.is_connected() == True):
-            check.save_os_copied_db(device, os_target_filename, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
             check.save_route_summary_db(device, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)

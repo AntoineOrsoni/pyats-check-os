@@ -47,9 +47,33 @@ The toolbox includes multiple librairies to clarify the code.
     * Printting the recap table.
 * `pyats_diff.py`: leveraging the Genie Diff library to highlight differences for a given `hostname` and `test_name`.
 
+## Testbed
+
+The devices used in the scripts must be added to a `testbed.yaml` file. A `testbed_template.yaml` file is provided as example.
+
+Testbed file examples can also be found in the official documentation.
+
+> https://pubhub.devnetcloud.com/media/pyats/docs/topology/example.html
+
 # Demo
 ![Demo - Check OS](demo/demo_check_os.gif)
 
 # pyATS documentation
 The official `pyATS` documentation is available on the link below.
 > https://pubhub.devnetcloud.com/media/pyats/docs/index.html
+
+# AETest documentation
+
+AEtest (Automation Easy Testing) is the standard test engineering automation harness. It offers a simple and straight-forward way for users to define, execute and debug testcases and testscripts, serving as a basis for other testscript templates & engines.
+
+The official `AETest` documentation is available on the link below.
+
+> https://pubhub.devnetcloud.com/media/pyats/docs/aetest/introduction.html
+
+## Difference between FAIL and ERROR
+
+Except is configured differently, if a test is `FAIL`, it will continue with the next tests. If a test is `ERROR` it will move directly to the CommonCleanup section.
+
+Complete documentation can be found here:
+
+> https://pubhub.devnetcloud.com/media/pyats/docs/aetest/control.html
