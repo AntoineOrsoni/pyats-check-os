@@ -3,3 +3,4 @@ venv
 temp
 test
 errors
+*__pycache__
