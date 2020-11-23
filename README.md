@@ -26,11 +26,6 @@ python post_checks.py --testbed /link/to/testbed.yaml
 ```bash
 python check_diff.py --hostname "device_hostname" --testname "test_name" --when "when_tested"
 ```
-
-## Toolbox
-
-
-
 * `--hostname` is the complete hostname of the device, as saved in the database.
 * `--testname` is the name of the test.
     - `route_summary` > `show ip route summary`
@@ -42,6 +37,17 @@ python check_diff.py --hostname "device_hostname" --testname "test_name" --when 
     - `after`     > for a specific output `after`
     - `before`    > for a specific output `before`
 
+## Toolbox
+
+The toolbox includes multiple librairies to clarify the code.
+* `database.py`: includes all functions relating to database interaction. 
+    * Getting outputs from the DB.
+    * Adding outputs to the DB.
+* `pyats_checks.py`: contains all the check functions.
+    * Leveraging Genie Parsers to extract a specific output, and saving it to the database.
+    * Leveraging the `database.py` library to compare before/after outputs for a given `hostname` and `test_name`.
+    * Printting the recap table.
+* `pyats_diff.py`: leveraging the Genie Diff library to highlight differences for a given `hostname` and `test_name`.
 
 # Demo
 ![Demo - Check OS](demo/demo_check_os.gif)
