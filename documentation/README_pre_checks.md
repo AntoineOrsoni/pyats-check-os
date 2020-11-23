@@ -35,14 +35,14 @@ The script is divided in three main parts:
 
 # Tests run
 
-## `all_outputs_copied_db(self, testbed)`
+### `all_outputs_copied_db(self, testbed)`
 
 For a given `testbed`, verifies that the outputs have been correctly saved to the db. If not, triggers and `ERROR`: further tests will not be run.
 
-## `check_os_copied_device(self, testbed)`
+### `check_os_copied_device(self, testbed)`
 
 For a given `testbed`, verifies that the list of files have been copied successfully.
 
-## `check_os_current_version_device(self, testbed)`
+### `check_os_current_version_device(self, testbed)`
 
 For a given `testbed`, verifies the current version of the device.
