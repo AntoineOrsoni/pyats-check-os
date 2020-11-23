@@ -8,13 +8,12 @@ touch sqlite/db/checks.db
 python sqlite/init_database.py
 ```
 
-# Using the script
+# Using the scripts
 ## Pre-checks
 ```bash
 python pre_checks.py --testbed /link/to/testbed.yaml
 ```
 [Complete details are explained here.](documentation/README_pre_checks.md)
-
 
 ## Post-checks
 ```bash
@@ -38,7 +37,6 @@ python check_diff.py --hostname "device_hostname" --testname "test_name" --when 
     - `before`    > for a specific output `before`
 
 ## Toolbox
-
 The toolbox includes multiple librairies to clarify the code.
 * `database.py`: includes all functions relating to database interaction. 
     * Getting outputs from the DB.
