@@ -75,7 +75,7 @@ def save_xconnect_db(device, when_tested, current_time):
 
 
 # Save in the DB if the OS has been copied on the device
-def save_os_copied_db(device, os_target, when_tested, current_time):
+def save_os_copied_db(device, os_target, rommon_target, when_tested, current_time):
 
     test_name = "os_copied"
 
@@ -89,6 +89,8 @@ def save_os_copied_db(device, os_target, when_tested, current_time):
 
     # Verify that the folder exists
     try:
+
+        # Checking OS files
         files = device.parse('dir bootflash:ImageTarget')
 
         for file in files['dir']['bootflash:/ImageTarget/']['files']:
@@ -97,8 +99,19 @@ def save_os_copied_db(device, os_target, when_tested, current_time):
                 # If we have a match
                 if file == os: 
                     number_files_copied.append(os)
+        
+        # Checking Rommon
+        files = device.parse('dir')
 
-        if len(number_files_copied) == len(os_target): os_copied = "True"
+        for file in files['dir']['bootflash:/']['files']:
+            for rommon in rommon_target:
+
+                # If we have a match
+                if file == rommon:
+                    number_files_copied.append(rommon)
+
+        # If we have all OS + Rommon files
+        if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied = "True"
 
     # If the parser is empty == the directory doesn't exist, catch the Error
     except SchemaEmptyParserError as e:
