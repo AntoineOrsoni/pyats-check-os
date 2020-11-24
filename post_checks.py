@@ -256,7 +256,7 @@ if __name__ == '__main__':
 
     # Parsing the args
     parser = argparse.ArgumentParser(description='Process the testbed.')
-    parser.add_argument('--testbed', dest='testbed', default='/home/anorsoni/Projets/2020-CAP-Altitude/pyats-check-os/testbed.yaml', help = '/link/to/testbed.yaml')
+    parser.add_argument('--testbed', dest='testbed', help = '/link/to/testbed.yaml', required = True)
     args, sys.argv[1:] = parser.parse_known_args(sys.argv[1:])
 
     testbed = load(args.testbed)
