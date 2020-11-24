@@ -4,4 +4,4 @@ RUN mkdir /db
 WORKDIR /db
 
 ENTRYPOINT ["sqlite3"]
-CMD ["altitude.db"]
+CMD ["checks.db"]
