@@ -1,5 +1,5 @@
 import sqlite3
-db_connection = sqlite3.connect('db/checks.db')
+db_connection = sqlite3.connect('sqlite/db/checks.db')
 db_cursor = db_connection.cursor()
 
 # Setting up the database
