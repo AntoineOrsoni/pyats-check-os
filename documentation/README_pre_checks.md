@@ -42,6 +42,8 @@ For a given `testbed`, verifies that the outputs have been correctly saved to th
 ### `check_os_copied_device(self, testbed)`
 
 For a given `testbed`, verifies that the list of files have been copied successfully.
+* `os_files` should be in the folder `bootflash:/ImageTarget/`
+* `rommon_files` should be in the folder `bootflash:/`
 
 ### `check_os_current_version_device(self, testbed)`
 
