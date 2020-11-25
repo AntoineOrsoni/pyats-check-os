@@ -1,5 +1,5 @@
 from genie.testbed import load
-from genie.metaparser.util.exceptions import SchemaEmptyParserError
+from genie.metaparser.util.exceptions import SchemaEmptyParserError SchemaMissingKeyError
 import toolbox.database as db
 import json
 from prettytable import PrettyTable
@@ -115,6 +115,11 @@ def save_os_copied_db(device, os_target, rommon_target, when_tested, current_tim
 
     # If the parser is empty == the directory doesn't exist, catch the Error
     except SchemaEmptyParserError as e:
+        # Silently discard it, test is failed by default 
+        pass
+
+    # If the parser is not empty == the directory exist, but the folder is empty
+    except SchemaMissingKeyError as e:
         # Silently discard it, test is failed by default 
         pass
         
