@@ -44,6 +44,6 @@ assert([item for item in when_help_list if when == item]), "Provided `when` is n
 if when == "both": 
     diff.compare_output_before_after(hostname, test_name)
 else:
-    pp = pprint.PrettyPrinter(indent=4)
+    pp = pprint.PrettyPrinter(indent=1)
     output = db.get_output_test(hostname, test_name, when)
     pp.pprint(json.loads(output))

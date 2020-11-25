@@ -1,5 +1,5 @@
 from genie.testbed import load
-from genie.metaparser.util.exceptions import SchemaEmptyParserError SchemaMissingKeyError
+from genie.metaparser.util.exceptions import SchemaEmptyParserError, SchemaMissingKeyError
 import toolbox.database as db
 import json
 from prettytable import PrettyTable
@@ -32,7 +32,7 @@ def save_route_summary_db(device, when_tested, current_time):
     test_name = "route_summary"
 
     # Converting as a string to be saved in the DB
-    output = json.dumps(device.parse('show ip route summary'))
+    output = json.dumps(device.parse('show ip route vrf * summary'))
 
     db.add_output(device.name, test_name, output, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
@@ -44,7 +44,7 @@ def save_routes_db(device, when_tested, current_time):
     test_name = "routes"
 
     # Converting as a string to be saved in the DB
-    output = json.dumps(device.parse('show ip route'))
+    output = json.dumps(device.parse('show ip route vrf *'))
 
     db.add_output(device.name, test_name, output, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
@@ -182,51 +182,84 @@ def get_routes_before_after(hostname, protocol, vrf):
 
     ## BGP
     if protocol == "bgp":
-        route_source = output_before['vrf'][vrf]['route_source'][protocol]
+        try:
+            route_source = output_before['vrf'][vrf]['route_source'][protocol]
+            
+            for as_number in route_source:
+                number_routes_before = route_source[as_number]['subnets']
         
-        for as_number in route_source:
-            number_routes_before = route_source[as_number]['subnets']
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_before = 0
 
-        route_source = output_after['vrf'][vrf]['route_source'][protocol]
+        try:
+            route_source = output_after['vrf'][vrf]['route_source'][protocol]
 
-        for as_number in route_source:
-            number_routes_after = route_source[as_number]['subnets']
+            for as_number in route_source:
+                number_routes_after = route_source[as_number]['subnets']
 
-        return (number_routes_before, number_routes_after)
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_after = 0
 
     ## ISIS
     if protocol == "isis":
-        route_source = output_before['vrf'][vrf]['route_source'][protocol]
+        try:
+            route_source = output_before['vrf'][vrf]['route_source'][protocol]
+            
+            for tag in route_source:
+                number_routes_before = route_source[tag]['subnets']
 
-        for tag in route_source:
-            number_routes_before = route_source[tag]['subnets']
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_before = 0
 
-        route_source = output_after['vrf'][vrf]['route_source'][protocol]
+        try:
+            route_source = output_after['vrf'][vrf]['route_source'][protocol]
+            for tag in route_source:
+                number_routes_after = route_source[tag]['subnets']
 
-        for tag in route_source:
-            number_routes_after = route_source[tag]['subnets']
-
-        return (number_routes_before, number_routes_after)
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_after = 0
 
     ## Connected
     if protocol == "connected":
-        route_source = output_before['vrf'][vrf]['route_source'][protocol]
-        number_routes_before = route_source['subnets']
+        try:
+            route_source = output_before['vrf'][vrf]['route_source'][protocol]
+            number_routes_before = route_source['subnets']
 
-        route_source = output_after['vrf'][vrf]['route_source'][protocol]
-        number_routes_after = route_source['subnets']
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_before = 0
 
-        return (number_routes_before, number_routes_after)    
+        try:
+            route_source = output_after['vrf'][vrf]['route_source'][protocol]
+            number_routes_after = route_source['subnets']
+
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_after = 0
 
     ## Internal -- For internal we take `networks` not `subnets` (doesn't exist)
     if protocol == "internal":
-        route_source = output_before['vrf'][vrf]['route_source'][protocol]
-        number_routes_before = route_source['networks']
+        try:
+            route_source = output_before['vrf'][vrf]['route_source'][protocol]
+            number_routes_before = route_source['networks']
 
-        route_source = output_after['vrf'][vrf]['route_source'][protocol]
-        number_routes_after = route_source['networks']
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_before = 0
 
-        return (number_routes_before, number_routes_after)       
+        try:
+            route_source = output_after['vrf'][vrf]['route_source'][protocol]
+            number_routes_after = route_source['networks']
+
+        # If the key doesn't exist, we have no routes for this protocol
+        except KeyError as e:
+            number_routes_after = 0
+
+    return (number_routes_before, number_routes_after)       
 
 # Checks if the VRF exists before/after
 # Returns a tuple of 2 booleans 
