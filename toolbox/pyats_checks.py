@@ -27,12 +27,34 @@ def os_version(hostname, when_tested):
 ###
 
 # Save in the DB the `show ip route summary`
-def save_route_summary_db(device, when_tested, current_time):
+def save_route_summary_db(device, list_vrf, when_tested, current_time):
 
     test_name = "route_summary"
+    dict_final = {'vrf': {}}
+
+    # Building the full dict, adding route_summary from each vrf
+    for vrf in list_vrf:
+
+        if vrf == "default":
+            dict_vrf = device.parse(f"show ip route summary")
+
+            # Adding the dict for the vrf to the concatenated dict
+            dict_final['vrf'][vrf] = dict_vrf['vrf'][vrf]
+        else: 
+            try:   
+                dict_vrf = device.parse(f"show ip route vrf {vrf} summary")
+
+                # Adding the dict for the vrf to the concatenated dict
+                dict_final['vrf'][vrf] = dict_vrf['vrf'][vrf]
+            
+            # The VRF doesn't exist
+            except SchemaEmptyParserError as e:
+                # Silently dicard the error, and move to the next VRF
+                pass
+
 
     # Converting as a string to be saved in the DB
-    output = json.dumps(device.parse('show ip route vrf * summary'))
+    output = json.dumps(dict_final)
 
     db.add_output(device.name, test_name, output, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)

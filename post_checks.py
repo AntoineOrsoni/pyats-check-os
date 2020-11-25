@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 # Variables
 when_tested = "after"
 os_target_version = "16.12.4"
+list_vrf = ["default", "v16", "v26"]
 
 # Delta
 isis_neighbors_delta = 0.8    # They have to be [80%-100%] similar
@@ -65,6 +66,7 @@ class CommonSetup(aetest.CommonSetup):
         # Only if I could connect to the device
         for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_current_version_db(device, when_tested, current_time)
+            check.save_route_summary_db(device, list_vrf, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
@@ -82,8 +84,8 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
 
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
-            # 4 = os_version, routes, isis, xconnect
-            if len(outputs_list) != 4: self.errored(f"output_lists has the wrong size. Expected 5, found {len(outputs_list)}")
+            # 5 = os_copied, os_version, routes, isis, xconnect
+            if len(outputs_list) != 5: self.errored(f"output_lists has the wrong size. Expected 5, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
@@ -179,7 +181,7 @@ class CheckOperData(aetest.Testcase):
 @aetest.loop(protocol = ["bgp", "isis", "connected", "internal"])
 class CheckRoutes(aetest.Testcase):
 
-    @aetest.test.loop(vrf=["default", "v16", "v26"])
+    @aetest.test.loop(vrf=list_vrf)
     def check_routes_delta_before_after(self, testbed, protocol, vrf):
 
         # test_name is a dict
