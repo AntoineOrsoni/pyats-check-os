@@ -74,7 +74,6 @@ class CommonSetup(aetest.CommonSetup):
         for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_copied_db(device, os_target_filenames, rommon_target_filenames, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
-            check.save_route_summary_db(device, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
@@ -92,8 +91,8 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
-            # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 6: self.errored(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
+            # 5 = os_copied, os_version, routes, isis, xconnect
+            if len(outputs_list) != 5: self.errored(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):

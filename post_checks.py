@@ -65,7 +65,6 @@ class CommonSetup(aetest.CommonSetup):
         # Only if I could connect to the device
         for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_current_version_db(device, when_tested, current_time)
-            check.save_route_summary_db(device, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
@@ -83,8 +82,8 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
 
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
-            # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 5: self.errored(f"output_lists has the wrong size. Expected 5, found {len(outputs_list)}")
+            # 4 = os_version, routes, isis, xconnect
+            if len(outputs_list) != 4: self.errored(f"output_lists has the wrong size. Expected 5, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
@@ -180,7 +179,7 @@ class CheckOperData(aetest.Testcase):
 @aetest.loop(protocol = ["bgp", "isis", "connected", "internal"])
 class CheckRoutes(aetest.Testcase):
 
-    @aetest.test.loop(vrf=["default", "v16", "Mcast-SFR"])
+    @aetest.test.loop(vrf=["default", "v16", "v26"])
     def check_routes_delta_before_after(self, testbed, protocol, vrf):
 
         # test_name is a dict
@@ -205,7 +204,7 @@ class CheckRoutes(aetest.Testcase):
             # Else, let's get the data and test
             if device.test_results['connect_device'] == "Pass":
 
-                # Does the VRF exist in the `show ip route summary`? If not, add its name to the not_compliant list
+                # Does the VRF exist in the `show ip route`? If not, add its name to the not_compliant list
                 # Returns a tuple of 2 booleans 
                 # (vrf_exists_before, vrf_exists_after)
                 vrf_exists = check.vrf_exists(device.name, vrf)
@@ -229,7 +228,6 @@ class CheckRoutes(aetest.Testcase):
                         not_compliant_delta.append(device.name)
                         test_result = "Fail"
                         logger.error(f"{device.name} number of {protocol} routes for VRF {vrf} is less than {routes_delta*100}% similar before/after.")                    
-
 
             check.add_result_device(device, test_name, test_result)
 

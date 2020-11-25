@@ -269,8 +269,8 @@ def vrf_exists(hostname, vrf_to_check):
     vrf_exists_before = False
     vrf_exists_after = False
 
-    output_before = json.loads(db.get_output_test(hostname, "route_summary", "before"))
-    output_after = json.loads(db.get_output_test(hostname, "route_summary", "after"))
+    output_before = json.loads(db.get_output_test(hostname, "routes", "before"))
+    output_after = json.loads(db.get_output_test(hostname, "routes", "after"))
 
     if vrf_to_check in output_before['vrf']:    vrf_exists_before = True
     if vrf_to_check in output_after['vrf']:     vrf_exists_after = True

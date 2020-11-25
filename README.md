@@ -27,7 +27,6 @@ python check_diff.py --hostname "device_hostname" --testname "test_name" --when 
 ```
 * `--hostname` is the complete hostname of the device, as saved in the database.
 * `--testname` is the name of the test.
-    - `route_summary` > `show ip route summary`
     - `routes`        > `show ip route`
     - `isis`          > `show ip isis neighbors`
     - `xconnect`      > `show xconnect all`
