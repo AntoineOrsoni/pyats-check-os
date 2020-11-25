@@ -24,7 +24,7 @@ list_vrf = ["default", "v16", "v26"]
     * 0: they can be completely different,
     * 1: they have to be 100% similar.
     * ex: number of `BGP` routes of vrf `default`, will be compared between `pre_checks` and `post_checks`. This test is independant to the number of `ISIS` routes of the vrf `Management`.
-* `list_vrf`: is the list of VRF that will be checked.
+* `list_vrf`: list of VRF that will be checked on the router.
 
 # Backbone of the script
 
