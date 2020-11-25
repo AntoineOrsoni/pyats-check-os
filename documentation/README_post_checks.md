@@ -10,6 +10,7 @@ os_target_version = "16.12.4"
 isis_neighbors_delta = 0.8
 xconnect_delta = 0.8
 routes_delta = 0.8
+list_vrf = ["default", "v16", "v26"]
 ```
 
 * `os_target_version`: target version. Script will test that this version is running on the device.
@@ -23,6 +24,7 @@ routes_delta = 0.8
     * 0: they can be completely different,
     * 1: they have to be 100% similar.
     * ex: number of `BGP` routes of vrf `default`, will be compared between `pre_checks` and `post_checks`. This test is independant to the number of `ISIS` routes of the vrf `Management`.
+* `list_vrf`: is the list of VRF that will be checked.
 
 # Backbone of the script
 
