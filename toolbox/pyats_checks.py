@@ -104,9 +104,10 @@ def save_xconnect_db(device, when_tested, current_time):
 
 
 # Save in the DB if the OS has been copied on the device
-def save_os_copied_db(device, os_target, rommon_target, when_tested, current_time):
+def save_os_copied_db(device, os_target, rommon_target, folder_images, when_tested, current_time):
 
     test_name = "os_copied"
+    folder_new_os = folder_images['new_os']
 
     # List to store the names of files that have been successfully copied on the device.
     # Will compare to len(os_target)
@@ -120,9 +121,9 @@ def save_os_copied_db(device, os_target, rommon_target, when_tested, current_tim
     try:
 
         # Checking OS files
-        files = device.parse('dir bootflash:ImageTarget')
+        files = device.parse(f"dir bootflash:{folder_new_os}")
 
-        for file in files['dir']['bootflash:/ImageTarget/']['files']:
+        for file in files['dir'][f'bootflash:/{folder_new_os}/']['files']:
             for os in os_target:
 
                 # If we have a match
@@ -166,10 +167,12 @@ def save_os_current_version_db(device, when_tested, current_time):
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
 # Save in the DB if the `boot system bootflash:/...` commands are present in the rigth order
-def save_boot_system_db(device, when_tested, current_time):
+def save_boot_system_db(device, folder_images, when_tested, current_time):
 
     test_name = "boot_system"
     boot_flash = 'False'
+    folder_new_os = folder_images['new_os']
+    folder_backup_os = folder_images['backup_os']
 
     # This will return a big string
     config_string = device.execute('show startup')
@@ -179,10 +182,10 @@ def save_boot_system_db(device, when_tested, current_time):
     for line in config:
         
         # Matching the first line
-        if line in 'boot system bootflash:/ImageTarget/packages.conf\r':
+        if line in f"boot system bootflash:/{folder_new_os}/packages.conf\r":
             
             # If the next line is the backup OS (the old one), expected answer.
-            if config[config.index(line) + 1] in 'boot system bootflash:/Image/packages.conf\r':
+            if config[config.index(line) + 1] in f"boot system bootflash:/{folder_backup_os}/packages.conf\r":
                 boot_flash = 'True'
 
                 # No need to continue

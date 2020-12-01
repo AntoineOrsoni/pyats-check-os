@@ -8,6 +8,8 @@ from unicon.core.errors import ConnectionError
 logger = logging.getLogger(__name__)
 
 # Variables
+when_tested = "before"
+os_target_version = "16.10.1"
 os_target_filenames = [
     "asr900rsp3-rpios-universalk9_npe.16.12.04.SPA.pkg",
     "asr900rsp3-rpbase.16.12.04.SPA.pkg",
@@ -22,9 +24,11 @@ os_target_filenames = [
 rommon_target_filenames = [
     "asr900-rommon.156-42r.S.pkg"
 ]
-when_tested = "before"
-os_target_version = "16.10.1"
 list_vrf = ["default", "v16", "v26"]
+folder_images = {
+    "new_os": "ImageTarget",
+    "backup_os": "Image"
+}
 
 class CommonSetup(aetest.CommonSetup):
     
@@ -73,9 +77,9 @@ class CommonSetup(aetest.CommonSetup):
 
         # Only if I could connect to the device
         for device in (device for device in testbed if device.is_connected() == True):
-            check.save_os_copied_db(device, os_target_filenames, rommon_target_filenames, when_tested, current_time)
+            check.save_os_copied_db(device, os_target_filenames, rommon_target_filenames, folder_images, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
-            check.save_boot_system_db(device, when_tested, current_time)
+            check.save_boot_system_db(device, folder_images, when_tested, current_time)
             check.save_route_summary_db(device, list_vrf, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)

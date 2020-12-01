@@ -5,6 +5,8 @@ python pre_checks.py --testbed /link/to/testbed.yaml
 
 # Variables that can be changed
 ```python
+when_tested = "before"
+os_target_version = "16.10.1"
 os_target_filenames = [
     "asr900rsp3-rpios-universalk9_npe.16.12.04.SPA.pkg",
     "asr900rsp3-rpbase.16.12.04.SPA.pkg",
@@ -19,16 +21,19 @@ os_target_filenames = [
 rommon_target_filenames = [
     "asr900-rommon.156-42r.S.pkg"
 ]
-when_tested = "before"
-os_target_version = "16.10.1"
 list_vrf = ["default", "v16", "v26"]
+folder_images = {
+    "new_os": "ImageTarget",
+    "backup_os": "Image"
+}
 ```
 
-* `os_target_filenames`: list of `os files` that will be checked on the router.
-* `rommon_target_filenames`: list of rommon files that will be checked on the router.
 * `when_tested`: when has the test been run. This value will be saved in the DB. It will indicate if the output is `pre_check` or `post_check`.
 * `os_target_version`: the current OS version to be checked on the router.
+* `os_target_filenames`: list of `os files` that will be checked on the router.
+* `rommon_target_filenames`: list of rommon files that will be checked on the router.
 * `list_vrf`: list of VRF that will be checked on the router.
+* `folder_images`: dictionnary of the `new_os` and `backup_os` folders on the router.
 
 
 # Backbone of the script
