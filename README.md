@@ -8,6 +8,34 @@ touch sqlite/db/checks.db
 python sqlite/init_database.py
 ```
 
+# Code versions
+
+Below the release notes for each version. You can download an older version [here](https://github.com/AntoineOrsoni/pyats-check-os/tags).
+
+## v1.0
+
+Initial version.
+
+## v1.1
+
+Minor update, mainly bug fixes.
+Adding the README documentation for `pre_checks` and `post_checks`.
+
+## v1.2
+
+Minor update, mainly bug fixes.
+
+## v1.4
+
+In the `pre_checks` we are now verifying the Rommon files as well.
+Adding a few error handlings (ex: empty Genie output before folder does not exist).
+
+## v1.5
+
+Adding the support for devices with 2 RSP.
+Adding a check to verify the commands `boot system bootflash:/...` are pushed, and in the right order. 
+If the VRF doesn't exist on the device before and after, the test is Passed.
+
 # Using the scripts
 ## Pre-checks
 ```bash
