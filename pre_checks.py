@@ -165,7 +165,8 @@ class CheckOperData(aetest.Testcase):
                     check.add_result_device(device, test_name, "Fail")
                     logger.error(f"`boot system bootflash:/...` command missing on {device.name}")
 
-        if len(not_compliant) != 0: self.failed(f"`boot system bootflash:/...` missing or not in the right order on the devices above.")
+        if len(not_compliant) != 0: self.failed(("`boot system bootflash:/...` missing, not in the right order or\n"
+                                                "not pointing to the right folder on the devices above."))
 
     @aetest.test
     def check_os_current_version_device(self, testbed):
