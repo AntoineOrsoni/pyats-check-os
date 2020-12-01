@@ -211,18 +211,25 @@ class CheckRoutes(aetest.Testcase):
                 # (vrf_exists_before, vrf_exists_after)
                 vrf_exists = check.vrf_exists(device.name, vrf)
 
-                if (vrf_exists[0] == False): 
+                # If the VRF doesn't exist on the router, and it did not exist in the pre-check. Pass.
+                if (vrf_exists[0] == False) and (vrf_exists[1] == False):
+                    test_result = "Pass"
+                    logger.info(f"{vrf} doesn't exist on {device.name}, and did not exist in the pre_checks.")
+
+                # It exists now, but it did not before
+                elif vrf_exists[0] == False: 
                     not_compliant_before.append(device.name)
                     test_result = "Fail"
-                    logger.error(f"{device.name} does not have VRF {vrf} in the pre_check.")
+                    logger.error(f"{device.name} does not have VRF {vrf} in the pre_check. It does now.")
 
-                if (vrf_exists[1] == False): 
+                # It doesn't exist now, but it did before
+                elif vrf_exists[1] == False: 
                     not_compliant_after.append(device.name)
                     test_result = "Fail"
-                    logger.error(f"{device.name} does not have VRF {vrf} in the post_check.")
+                    logger.error(f"{device.name} does not have VRF {vrf} in the post_check. It did in the pre_checks.")
 
                 # If the VRF exists in both, I can compare
-                if (vrf_exists[0] == True) and (vrf_exists[1] == True):
+                elif (vrf_exists[0] == True) and (vrf_exists[1] == True):
                     routes_number = check.get_routes_before_after(device.name, protocol, vrf)
 
                     # If we have less than 80% similarity in one way OR another, something is wrong
