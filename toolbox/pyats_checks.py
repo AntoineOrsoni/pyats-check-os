@@ -102,6 +102,15 @@ def save_xconnect_db(device, when_tested, current_time):
     db.add_output(device.name, test_name, output, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
+# Check if the device has 2 RSP
+# Assign the device `number_rsp` attribute with the number of RSP on the device
+def set_number_rsp(device):
+
+    platform = device.parse('show platform')
+
+    # If R0 and R1 are both inserted in one of the platform slots
+    if 'R0' and 'R1' in platform['slot'].keys(): device.number_rsp = 2
+    else: device.number_rsp = 1
 
 # Save in the DB if the OS has been copied on the device
 def save_os_copied_db(device, os_target, rommon_target, folder_images, when_tested, current_time):
@@ -109,51 +118,70 @@ def save_os_copied_db(device, os_target, rommon_target, folder_images, when_test
     test_name = "os_copied"
     folder_new_os = folder_images['new_os']
 
-    # List to store the names of files that have been successfully copied on the device.
-    # Will compare to len(os_target)
-    number_files_copied = []
-
-    # Boolean to store if os has been copied
+    # List of Booleans to store if os has been copied
+    # Each item in the list will be the result for each RSP
     # Converted as string, because I can't store booleans in the DB
-    os_copied = "False" 
+    os_copied = [] 
 
-    # Verify that the folder exists
-    try:
+    # Set device attribute `number_rsp` with the number of RSP inserted on the device
+    set_number_rsp(device)
 
-        # Checking OS files
-        files = device.parse(f"dir bootflash:{folder_new_os}")
+    # If device has two RSP, we will also check the files on the standby-bootflash
+    if device.number_rsp == 2: 
+        bootflash_list = ['bootflash', 'stby-bootflash']
+    if device.number_rsp == 1:
+        bootflash_list = ['bootflash']
 
-        for file in files['dir'][f'bootflash:/{folder_new_os}/']['files']:
-            for os in os_target:
+    for bootflash in bootflash_list:
 
-                # If we have a match
-                if file == os: 
-                    number_files_copied.append(os)
+        # List to store the names of files that have been successfully copied on the device.
+        # Reset to empty for each RSP
+        # Will compare to len(os_target)
+        number_files_copied = []
+
+        # Verify that the folder exists
+        try:
+
+            # Checking OS files
+            files = device.parse(f"dir {bootflash}:{folder_new_os}")
+
+            for file in files['dir'][f'{bootflash}:/{folder_new_os}/']['files']:
+                for os in os_target:
+
+                    # If we have a match
+                    if file == os: 
+                        number_files_copied.append(os)
+            
+            # Checking Rommon
+            files = device.parse(f'dir {bootflash}:/')
+
+            for file in files['dir'][f'{bootflash}:/']['files']:
+                for rommon in rommon_target:
+
+                    # If we have a match
+                    if file == rommon:
+                        number_files_copied.append(rommon)
+
+            # If we have all OS + Rommon files
+            if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied.append("True")
+            else: os_copied.append("False")
+
+        # If the parser is empty == the directory doesn't exist
+        except SchemaEmptyParserError as e:
+            # Silently discard it, test is failed by default 
+            pass
+
+        # If the parser is not empty == the directory exist, but it is empty
+        except SchemaMissingKeyError as e:
+            # Silently discard it, test is failed by default 
+            pass
         
-        # Checking Rommon
-        files = device.parse('dir')
+    # If the test has not failed for all the RSP, True
+    # Else False    
+    if "False" not in os_copied: os_copied_result = "True"
+    else: os_copied_result = "False"    
 
-        for file in files['dir']['bootflash:/']['files']:
-            for rommon in rommon_target:
-
-                # If we have a match
-                if file == rommon:
-                    number_files_copied.append(rommon)
-
-        # If we have all OS + Rommon files
-        if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied = "True"
-
-    # If the parser is empty == the directory doesn't exist
-    except SchemaEmptyParserError as e:
-        # Silently discard it, test is failed by default 
-        pass
-
-    # If the parser is not empty == the directory exist, but it is empty
-    except SchemaMissingKeyError as e:
-        # Silently discard it, test is failed by default 
-        pass
-        
-    db.add_output(device.name, test_name, os_copied, current_time)
+    db.add_output(device.name, test_name, os_copied_result, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
 # Save in the DB the current version of the device
@@ -333,8 +361,7 @@ def vrf_exists(hostname, vrf_to_check):
     if vrf_to_check in output_after['vrf']:     vrf_exists_after = True
 
     return(vrf_exists_before, vrf_exists_after)
-
-
+        
 # Returns the number of neighbors before/after
 # Returns a tuple of 2 integers 
 # (number_xconnect_before, number_xconnect_after)

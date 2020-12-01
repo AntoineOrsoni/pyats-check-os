@@ -131,7 +131,12 @@ class CheckOperData(aetest.Testcase):
                     check.add_result_device(device, test_name, "Fail")
                     logger.error(f"OS files are missing on {device.name}.")
 
-        if len(not_compliant) != 0: self.failed(f"OS files are not copied on the above devices, or not in the right folder.")
+                if device.number_rsp == 2:
+                    logger.info(f"{device.name} has 2 RSP.")
+
+        if len(not_compliant) != 0: self.failed(("OS files are not copied on the above devices,\n"
+                                                "not in the right folder, or folder doesn't exist.\n"
+                                                "If device has 2 RSP, check the standby-bootflash."))
 
     @aetest.test
     def check_boot_system_order(self, testbed):
