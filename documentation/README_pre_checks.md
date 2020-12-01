@@ -55,8 +55,18 @@ For a given `testbed`, verifies that the outputs have been correctly saved to th
 ### `check_os_copied_device(self, testbed)`
 
 For a given `testbed`, verifies that the list of files have been copied successfully.
-* `os_files` should be in the folder `bootflash:/ImageTarget/`
-* `rommon_files` should be in the folder `bootflash:/`
+* `os_files` should be in the folder `folder_images['new_os']`. 
+* `rommon_files` should be in the folder `folder_images['backup_os']`.
+
+If the device has 2 RSP, files will be checked on the active and standby RSP. Folders on the standby RSP must have the same naming.
+
+### `check_boot_system_order(self, testbed)`
+
+For a given `testbed`, verifies the correct order of the two `boot system bootflash:/...` commands. 
+* First line must be `boot system bootflash:/{folder_new_os}/packages.conf`,
+* Second line should be `boot system bootflash:/{folder_backup_os}/packages.conf`.
+
+`folder_new_os` and `folder_backup_os` refer to the `folder_images` dictionnary.
 
 ### `check_os_current_version_device(self, testbed)`
 
