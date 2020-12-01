@@ -47,6 +47,10 @@ The toolbox includes multiple librairies to clarify the code.
     * Printting the recap table.
 * `pyats_diff.py`: leveraging the Genie Diff library to highlight differences for a given `hostname` and `test_name`.
 
+## Database
+
+We use `SQLite3` to store and retrieve information. Table schemes are stored in the `table-scheme` folder.
+
 ## Testbed
 
 The devices used in the scripts must be added to a `testbed.yaml` file. A `testbed_template.yaml` file is provided as example.

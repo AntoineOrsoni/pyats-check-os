@@ -22,6 +22,13 @@ def os_version(hostname, when_tested):
     # ASR903_5    os_version  16.10.1     2020-11-18 13:37:56
     return db.get_output_line(hostname, "os_version", when_tested)[2]
 
+# Returns True if the `boot system bootflash:/...` command are present, in the right order
+def boot_system(hostname, when_tested):
+
+    # Sample output
+    # ASR903_5    boot_system  True     2020-11-18 13:37:56
+    return db.get_output_line(hostname, "boot_system", when_tested)[2]
+
 ### 
 ### SAVING OUTPUTS IN THE DB
 ###
@@ -158,6 +165,31 @@ def save_os_current_version_db(device, when_tested, current_time):
     db.add_output(device.name, test_name, os_current_version, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
+# Save in the DB if the `boot system bootflash:/...` commands are present in the rigth order
+def save_boot_system_db(device, when_tested, current_time):
+
+    test_name = "boot_system"
+    boot_flash = 'False'
+
+    # This will return a big string
+    config_string = device.execute('show startup')
+    # Splitting in a list, for each line in the config
+    config = config_string.split('\n')
+
+    for line in config:
+        
+        # Matching the first line
+        if line in 'boot system bootflash:/ImageTarget/packages.conf\r':
+            
+            # If the next line is the backup OS (the old one), expected answer.
+            if config[config.index(line) + 1] in 'boot system bootflash:/Image/packages.conf\r':
+                boot_flash = 'True'
+
+                # No need to continue
+                break
+    
+    db.add_output(device.name, test_name, boot_flash, current_time)
+    db.add_timestamp(device.name, test_name, when_tested, current_time)    
 
 # Adding one more test to the total_number_tests
 def add_result_device(device, test_name, test_result):

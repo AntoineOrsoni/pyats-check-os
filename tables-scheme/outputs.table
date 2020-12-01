@@ -9,3 +9,4 @@ Possible test_name:
     - xconnect      > JSON
     - os_version    > string
     - os_copied     > boolean
+    - boot_system   > boolean

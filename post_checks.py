@@ -115,7 +115,7 @@ class CheckOperData(aetest.Testcase):
                 if os_version != os_target_version: 
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
+                    logger.error(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
         if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
@@ -144,7 +144,7 @@ class CheckOperData(aetest.Testcase):
                 if (neighbors_number[0] < neighbors_number[1] * isis_neighbors_delta) or (neighbors_number[1] < neighbors_number[0] * isis_neighbors_delta):
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"{device.name} number of isis neighbors is less than {isis_neighbors_delta*100}% similar before/after.")                    
+                    logger.error(f"{device.name} number of isis neighbors is less than {isis_neighbors_delta*100}% similar before/after.")                    
 
         if len(not_compliant) != 0: self.failed(f"The above devices have a number of isis neighbors exceeding the threshold.")
 
@@ -173,7 +173,7 @@ class CheckOperData(aetest.Testcase):
                 if (xconnect_number[0] < xconnect_number[1] * xconnect_delta) or (xconnect_number[1] < xconnect_number[0] * xconnect_delta):
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"{device.name} number of xconnect UP is less than {xconnect_delta*100}% similar before/after.")                    
+                    logger.error(f"{device.name} number of xconnect UP is less than {xconnect_delta*100}% similar before/after.")                    
 
         if len(not_compliant) != 0: self.failed(f"The above devices have a number of xconnect UP exceeding the threshold.")
 

@@ -75,6 +75,7 @@ class CommonSetup(aetest.CommonSetup):
         for device in (device for device in testbed if device.is_connected() == True):
             check.save_os_copied_db(device, os_target_filenames, rommon_target_filenames, when_tested, current_time)
             check.save_os_current_version_db(device, when_tested, current_time)
+            check.save_boot_system_db(device, when_tested, current_time)
             check.save_route_summary_db(device, list_vrf, when_tested, current_time)
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)
@@ -93,8 +94,8 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
-            # 6 = os_copied, os_version, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 6: self.errored(f"Output_lists has the wrong size. Expected 6, found {len(outputs_list)}")
+            # 7 = os_copied, os_version, boot_system, route_summary, routes, isis, xconnect
+            if len(outputs_list) != 7: self.errored(f"Output_lists has the wrong size. Expected 7, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
@@ -124,10 +125,38 @@ class CheckOperData(aetest.Testcase):
                 if check.os_copied(device.name, os_target_filenames, when_tested) != "True": 
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"OS files are missing on {device.name}.")
+                    logger.error(f"OS files are missing on {device.name}.")
 
         if len(not_compliant) != 0: self.failed(f"OS files are not copied on the above devices, or not in the right folder.")
 
+    @aetest.test
+    def check_boot_system_order(self, testbed):
+
+        test_name = "boot_system"
+        testbed.tests_run.append(test_name)
+        logger.info("Checking that the `boot system bootflash:/...` lines are present and in the correct order")
+        
+        not_compliant = []
+
+        for device in testbed:
+
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
+                check.add_result_device(device, test_name, "Fail")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+
+                # Assume the test Pass
+                check.add_result_device(device, test_name, "Pass")
+            
+                # If OS is not copied, add its name to the list
+                if check.boot_system(device.name, when_tested) != "True": 
+                    not_compliant.append(device.name)
+                    check.add_result_device(device, test_name, "Fail")
+                    logger.error(f"`boot system bootflash:/...` command missing on {device.name}")
+
+        if len(not_compliant) != 0: self.failed(f"`boot system bootflash:/...` missing or not in the right order on the devices above.")
 
     @aetest.test
     def check_os_current_version_device(self, testbed):
@@ -154,7 +183,7 @@ class CheckOperData(aetest.Testcase):
                 if os_version != os_target_version: 
                     not_compliant.append(device.name)
                     check.add_result_device(device, test_name, "Fail")
-                    logger.info(f"{device.name} is not using {os_target_version}. Using {os_version}")
+                    logger.error(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
         if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
 
