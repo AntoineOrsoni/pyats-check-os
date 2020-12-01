@@ -135,12 +135,12 @@ def save_os_copied_db(device, os_target, rommon_target, when_tested, current_tim
         # If we have all OS + Rommon files
         if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied = "True"
 
-    # If the parser is empty == the directory doesn't exist, catch the Error
+    # If the parser is empty == the directory doesn't exist
     except SchemaEmptyParserError as e:
         # Silently discard it, test is failed by default 
         pass
 
-    # If the parser is not empty == the directory exist, but the folder is empty
+    # If the parser is not empty == the directory exist, but it is empty
     except SchemaMissingKeyError as e:
         # Silently discard it, test is failed by default 
         pass

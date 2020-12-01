@@ -57,8 +57,6 @@ def get_oldest_timestamp(hostname, when_tested):
 # ASR903_5    xconnect    {"segment_  2020-11-18 13:37:56
 def get_list_outputs_device(hostname, when_tested, timestamp):
 
-    # timestamp = get_oldest_timestamp(hostname, when_tested)
-
     filter_tuple = []
     filter_tuple.extend((hostname, timestamp))
 
