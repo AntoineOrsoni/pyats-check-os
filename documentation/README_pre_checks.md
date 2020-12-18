@@ -35,7 +35,6 @@ folder_images = {
 * `list_vrf`: list of VRF that will be checked on the router.
 * `folder_images`: dictionnary of the `new_os` and `backup_os` folders on the router.
 
-
 # Backbone of the script
 
 The script is divided in three main parts:
@@ -43,16 +42,20 @@ The script is divided in three main parts:
     * Loading the devices from the `testbed`,
     * Connecting to the devices,
     * Saving outputs to the database.
-* `TestCase`: which takes care of the testing itself. Comparing outputs and expectations.
+* `TestCase`: which takes care of the testing itself. Comparing outputs and expectations. Tests are detailed in the next part.
 * `CommonCleanup`: which takes care of the final setup. Disconnecting from the devices.
 
 # Tests run
 
-### `all_outputs_copied_db(self, testbed)`
+## Check that all outputs are properly copied in the SQLite database
+
+`all_outputs_copied_db(self, testbed)`
 
 For a given `testbed`, verifies that the outputs have been correctly saved to the db. If not, triggers and `ERROR`: further tests will not be run.
 
-### `check_os_copied_device(self, testbed)`
+## Check that the new OS files are copied on the device
+
+`check_os_copied_device(self, testbed)`
 
 For a given `testbed`, verifies that the list of files have been copied successfully.
 * `os_files` should be in the folder `folder_images['new_os']`. 
@@ -60,7 +63,9 @@ For a given `testbed`, verifies that the list of files have been copied successf
 
 If the device has 2 RSP, files will be checked on the active and standby RSP. Folders on the standby RSP must have the same naming.
 
-### `check_boot_system_order(self, testbed)`
+## Check the OS boot order
+
+`check_boot_system_order(self, testbed)`
 
 For a given `testbed`, verifies the correct order of the two `boot system bootflash:/...` commands. 
 * First line must be `boot system bootflash:/{folder_new_os}/packages.conf`,
@@ -68,6 +73,8 @@ For a given `testbed`, verifies the correct order of the two `boot system bootfl
 
 `folder_new_os` and `folder_backup_os` refer to the `folder_images` dictionnary.
 
-### `check_os_current_version_device(self, testbed)`
+## Check the current OS version of the device
+
+`check_os_current_version_device(self, testbed)`
 
 For a given `testbed`, verifies the current version of the device.

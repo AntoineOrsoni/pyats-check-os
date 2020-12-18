@@ -1,12 +1,19 @@
 # pyATS-checks-os
-Leveragging `pyATS` and `genie` to check run `pre_checks` and `post_check` on a `testbed`.
+Leveragging `pyATS` and `Genie` to check run `pre_checks` and `post_check` on a `testbed`.
 
 # Installing the requirements
+pyATS supports Python versions from 3.5 to 3.8 (i.e. 3.9 is not yet supported). You can check the latest information here:
+
+> https://pubhub.devnetcloud.com/media/pyats-getting-started/docs/install/installpyATS.html
+
 ```bash
 pip install -r requirements.txt
 touch sqlite/db/checks.db
 python sqlite/init_database.py
 ```
+
+First line will install the right librairies.
+Second and third line will create and initiate the database with the right tables and headers.
 
 # Code versions
 
@@ -25,6 +32,10 @@ Below the release notes for each version. You can download an older version [her
 
 * Minor update, mainly bug fixes.
 
+## v1.3
+
+* Minor update, mainly bug fixes.
+
 ## v1.4
 
 * In the `pre_checks` we are now verifying the Rommon files as well.
@@ -35,6 +46,13 @@ Below the release notes for each version. You can download an older version [her
 * Adding the support for devices with 2 RSP.
 * Adding a check to verify the commands `boot system bootflash:/...` are pushed, and in the right order. 
 * If the VRF doesn't exist on the device before and after, the test is Passed.
+
+## v1.6
+
+* Documentation update
+    * `./documentation/README*` has been updated,
+    * Adding `./documentation/USECASE.md` to describe the use case,
+    * Added the supported python release for pyATS.
 
 # Using the scripts
 ## Pre-checks
@@ -50,11 +68,14 @@ python post_checks.py --testbed /link/to/testbed.yaml
 [Complete details are explained here.](documentation/README_post_checks.md)
 
 ## Printing the diff
+
+To be used after the migration, in case you need to print a specific output, or compare an output before and after the migration.
+
 ```bash
 python check_diff.py --hostname "device_hostname" --testname "test_name" --when "when_tested"
 ```
 * `--hostname` is the complete hostname of the device, as saved in the database.
-* `--testname` is the name of the test.
+* `--testname` is the name of the test. On the left, the `testname`, on the right the related IOS XE command:
     - `route_summary` > `show ip route summary`
     - `routes`        > `show ip route`
     - `isis`          > `show ip isis neighbors`

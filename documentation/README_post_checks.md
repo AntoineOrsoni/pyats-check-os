@@ -33,28 +33,38 @@ The script is divided in three main parts:
     * Loading the devices from the `testbed`,
     * Connecting to the devices,
     * Saving outputs to the database.
-* `TestCase`: which takes care of the testing itself. Comparing outputs and expectations.
+* `TestCase`: which takes care of the testing itself. Comparing outputs and expectations. Tests are detailed in the next part.
 * `CommonCleanup`: which takes care of the final setup. Disconnecting from the devices.
 
 # Tests run
 
-### `all_outputs_copied_db(self, testbed)`
+## Check that all outputs are properly copied in the SQLite database
+
+`all_outputs_copied_db(self, testbed)`
 
 For a given `testbed`, verifies that the outputs have been correctly saved to the db. If not, triggers and `ERROR`: further tests will not be run.
 
-### `check_os_current_version_device(self, testbed)`
+## Check the current OS version of the device
+
+`check_os_current_version_device(self, testbed)`
 
 For a given `testbed`, verifies the current version of the device.
 
-### `check_isis_neighbors_differences(self, testbed)`
+## Check the delta between the quantity of ISIS neighbors before and after the migration
+
+`check_isis_neighbors_differences(self, testbed)`
 
 For a given `testbed`, compares the number of `isis_neighbors` between `pre_checks` and `post_checks` with the `delta` value configured.
 
-### `check_xconnect_differences(self, testbed)`
+## Check the delta between the quantity of xconnects before and after the migration
+
+`check_xconnect_differences(self, testbed)`
 
 For a given `testbed`, compares the number of `xconnects` between `pre_checks` and `post_checks` with the `delta` value configured.
 
-### `check_routes_delta_before_after(self, testbed, protocol, vrf)`
+## Check the delta between the quantity of routes per protocol, per VRF, before and after the migration
+
+`check_routes_delta_before_after(self, testbed, protocol, vrf)`
 
 For a given `testbed`, `protocol` and `vrf` compares the number of `xconnects` between `pre_checks` and `post_checks` with the `delta` value configured. It does the comparison for each tuple of `(protocol, vrf)`.
 * ex: number of `BGP` routes of vrf `default`, will be compared between `pre_checks` and `post_checks`. This test is independant to the number of `ISIS` routes of the vrf `Management`.
