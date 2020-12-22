@@ -55,6 +55,19 @@ Below the release notes for each version. You can download an older version [her
     * Added the supported python release for pyATS.
 
 # Using the scripts
+## Testbed
+
+The two below scripts below (`pre_checks` and `post_checks`) will use a testbed file, with all the information about the devices we will verify. Information will include elements such as:
+* IP address,
+* Port,
+* Credentials,
+* Protocol (SSH, telnet),
+* Type of device.
+
+A sample testbed file is provided: `./testbed_template.yaml`. You can read the documentation on how to create a testbed file, here: 
+
+> https://pubhub.devnetcloud.com/media/pyats-getting-started/docs/quickstart/manageconnections.html#creating-testbed-yaml-file
+
 ## Pre-checks
 ```bash
 python pre_checks.py --testbed /link/to/testbed.yaml
@@ -111,7 +124,17 @@ Testbed file examples can also be found in the official documentation.
 # Demo
 ![Demo - Check OS](demo/demo_check_os.gif)
 
+## Pre_checks
+
+An example of the expected output can be found [here](./documentation/output_example_pre_checks.md).
+
+## Post_checks
+
+An example of the expected output can be found [here](./documentation/output_example_post_checks.md).
+
+
 # pyATS documentation
+
 The official `pyATS` documentation is available on the link below.
 > https://pubhub.devnetcloud.com/media/pyats/docs/index.html
 

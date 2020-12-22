@@ -3,6 +3,10 @@
 python post_checks.py --testbed /link/to/testbed.yaml
 ```
 
+# Output example
+
+An example of the expected output can be found [here](./output_example_post_checks.md).
+
 # Variables that can be changed
 
 ```python

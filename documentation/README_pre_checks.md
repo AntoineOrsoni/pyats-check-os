@@ -3,6 +3,10 @@
 python pre_checks.py --testbed /link/to/testbed.yaml
 ```
 
+# Output example
+
+An example of the expected output can be found [here](./output_example_pre_checks.md).
+
 # Variables that can be changed
 ```python
 when_tested = "before"
