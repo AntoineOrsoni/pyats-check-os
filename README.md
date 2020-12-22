@@ -1,3 +1,5 @@
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/AntoineOrsoni/pyats-check-os)
+
 # pyATS-checks-os
 Leveragging `pyATS` and `Genie` to check run `pre_checks` and `post_check` on a `testbed`.
 
