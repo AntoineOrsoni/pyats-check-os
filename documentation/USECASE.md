@@ -72,6 +72,8 @@ The official `AETest` documentation is available on the link below.
 # Related Sandbox
 You can use the DevNet IOS XE sandbox (or a physical device) in order to run the code. You can find DevNet sandboxes [here](http://devnetsandbox.cisco.com/RM/Topology).
 
+For instance, you can use the [always-on IOS XE sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/27d9747a-db48-4565-8d44-df318fce37ad?diagramType=Topology).
+
 Please note that you might need to adapt the device configuration in order to run all the tests successfuly. For example, you might need to configure a few ISIS neighbors and xconnects. You might also need to adapt certain variables such as the current OS version. Please refer to the documentation, above.
 
 ## Links to DevNet Learning Labs
