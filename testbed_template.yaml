@@ -13,3 +13,6 @@ devices:                # all device definition goes under devices block
       vty:
         protocol: ssh
         ip: '1.2.3.4' # replace with the IP address of the device
+        settings: # don't wait for the ~10 seconds timeout to disconnect()
+          GRACEFUL_DISCONNECT_WAIT_SEC: 0
+          POST_DISCONNECT_WAIT_SEC: 0
