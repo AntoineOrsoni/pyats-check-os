@@ -56,6 +56,11 @@ Below the release notes for each version. You can download an older version [her
     * Adding `./documentation/USECASE.md` to describe the use case,
     * Added the supported python release for pyATS.
 
+## v1.7
+
+* `rommon` files can be put in a specific folder (not always the root folder),
+* Documentation has been updated accordingly.
+
 # Using the scripts
 ## Testbed
 
