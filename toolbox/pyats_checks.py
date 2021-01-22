@@ -102,6 +102,7 @@ def save_xconnect_db(device, when_tested, current_time):
     db.add_output(device.name, test_name, output, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
+
 # Check if the device has 2 RSP
 # Assign the device `number_rsp` attribute with the number of RSP on the device
 def set_number_rsp(device):
@@ -112,11 +113,15 @@ def set_number_rsp(device):
     if 'R0' and 'R1' in platform['slot'].keys(): device.number_rsp = 2
     else: device.number_rsp = 1
 
-# Save in the DB if the OS has been copied on the device
+
+# Save in the DB if the new OS and the rommon have been copied on the device
+# We don't check if the old_os is copied (no need)
+# If the router has dual RSP, check in the bootflash and stby-bootflash
 def save_os_copied_db(device, os_target, rommon_target, folder_images, when_tested, current_time):
 
     test_name = "os_copied"
     folder_new_os = folder_images['new_os']
+    folder_rommon = folder_images['rommon']
 
     # List of Booleans to store if os has been copied
     # Each item in the list will be the result for each RSP
@@ -153,28 +158,33 @@ def save_os_copied_db(device, os_target, rommon_target, folder_images, when_test
                         number_files_copied.append(os)
             
             # Checking Rommon
-            files = device.parse(f'dir {bootflash}:/')
+            files = device.parse(f'dir {bootflash}:{folder_rommon}')
 
-            for file in files['dir'][f'{bootflash}:/']['files']:
+            for file in files['dir'][f'{bootflash}:/{folder_rommon}/']['files']:
                 for rommon in rommon_target:
 
                     # If we have a match
                     if file == rommon:
                         number_files_copied.append(rommon)
 
+            print(device.name)
+            print(number_files_copied)
+            print('---')
             # If we have all OS + Rommon files
             if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied.append("True")
             else: os_copied.append("False")
 
         # If the parser is empty == the directory doesn't exist
         except SchemaEmptyParserError as e:
-            # Silently discard it, test is failed by default 
-            pass
+            # Silently discard it, test is failed by default
+            print(device.name)
+            os_copied.append("False")
 
         # If the parser is not empty == the directory exist, but it is empty
         except SchemaMissingKeyError as e:
             # Silently discard it, test is failed by default 
-            pass
+            print(device.name)
+            os_copied.append("False")
         
     # If the test has not failed for all the RSP, True
     # Else False    

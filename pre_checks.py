@@ -27,7 +27,8 @@ rommon_target_filenames = [
 list_vrf = ["default", "v16", "v26"]
 folder_images = {
     "new_os": "ImageTarget",
-    "backup_os": "Image"
+    "backup_os": "Image",
+    "rommon": "Rommon"
 }
 
 class CommonSetup(aetest.CommonSetup):
