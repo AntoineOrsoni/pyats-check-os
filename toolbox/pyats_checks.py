@@ -109,8 +109,21 @@ def set_number_rsp(device):
 
     platform = device.parse('show platform')
 
-    # If R0 and R1 are both inserted in one of the platform slots
-    if 'R0' and 'R1' in platform['slot'].keys(): device.number_rsp = 2
+    # If R0 and R1 are in the list, the device supports two RSP
+    if 'R0' and 'R1' in platform['slot'].keys(): 
+        # Makes a list with the RSP inserted in each slot. Name of the RSP or empty
+        # Sample output:
+        #   'R0': {'other': {'A900-RSP3C-400-W': {'insert_time': '1w2d',
+        #                                         'name': 'A900-RSP3C-400-W',
+        #                                         'slot': 'R0',
+        #                                         'state': 'ok, active'}}},
+        #   'R1': {'other': {'': {'insert_time': '1w2d',
+        #                         'name': '',
+        #                         'slot': 'R1',
+        #                         'state': 'unknown'}}}}}
+        rsp = list(platform['slot']['R0']['other'].keys()) + list(platform['slot']['R1']['other'].keys()) 
+        # 2 - (number of empty slots)
+        device.number_rsp = 2 - rsp.count('')
     else: device.number_rsp = 1
 
 
@@ -167,9 +180,6 @@ def save_os_copied_db(device, os_target, rommon_target, folder_images, when_test
                     if file == rommon:
                         number_files_copied.append(rommon)
 
-            print(device.name)
-            print(number_files_copied)
-            print('---')
             # If we have all OS + Rommon files
             if len(number_files_copied) == len(os_target) + len(rommon_target): os_copied.append("True")
             else: os_copied.append("False")
@@ -177,13 +187,11 @@ def save_os_copied_db(device, os_target, rommon_target, folder_images, when_test
         # If the parser is empty == the directory doesn't exist
         except SchemaEmptyParserError as e:
             # Silently discard it, test is failed by default
-            print(device.name)
             os_copied.append("False")
 
         # If the parser is not empty == the directory exist, but it is empty
         except SchemaMissingKeyError as e:
             # Silently discard it, test is failed by default 
-            print(device.name)
             os_copied.append("False")
         
     # If the test has not failed for all the RSP, True
