@@ -61,6 +61,10 @@ Below the release notes for each version. You can download an older version [her
 * `rommon` files can be put in a specific folder (not always the root folder),
 * Documentation has been updated accordingly.
 
+## v1.8
+
+* fixing dual RSP issue. Device has two RSP slots but only one of the two RSP is inserted.
+
 # Using the scripts
 ## Testbed
 
