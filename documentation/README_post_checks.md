@@ -52,7 +52,13 @@ For a given `testbed`, verifies that the outputs have been correctly saved to th
 
 `check_os_current_version_device(self, testbed)`
 
-For a given `testbed`, verifies the current version of the device.
+For a given `testbed`, verifies the current version of each device.
+
+## Check the CPU utilisation for the last 5 minutes of the device
+
+`check_cpu_device(self, testbed)`
+
+For a given `testbed`, verifies the CPU utilisation for the last 5 minutes of each device.
 
 ## Check the delta between the quantity of ISIS neighbors before and after the migration
 

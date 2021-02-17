@@ -12,9 +12,11 @@ test_help = '''Possible completions:
 - route_summary > show ip route summary
 - routes        > show ip route
 - isis          > show ip isis neighbors
-- xconnect      > show xconnect all'''
+- xconnect      > show xconnect all
+- cpu           > `show cpu processes`
+'''
 
-test_help_list = ["route_summary", "routes", "isis", "xconnect"]
+test_help_list = ["route_summary", "routes", "isis", "xconnect", "cpu"]
 
 when_help = '''Possible completions:
 - both      > for a diff before/after
@@ -38,7 +40,6 @@ when = args.when
 # for device in (device for device in testbed if device.is_connected() == True)
 assert([item for item in test_help_list if test_name == item]), "Provided `test` is not in the list. Use --help for possible completions."
 assert([item for item in when_help_list if when == item]), "Provided `when` is not in the list. Use --help for possible completions."
-
 
 # Sends a diff
 if when == "both": 

@@ -65,6 +65,10 @@ Below the release notes for each version. You can download an older version [her
 
 * fixing dual RSP issue. Device has two RSP slots but only one of the two RSP is inserted.
 
+## v 1.9
+
+* Adding a check for CPU utilisation for the last 5 minutes.
+
 # Using the scripts
 ## Testbed
 
@@ -104,6 +108,7 @@ python check_diff.py --hostname "device_hostname" --testname "test_name" --when 
     - `routes`        > `show ip route`
     - `isis`          > `show ip isis neighbors`
     - `xconnect`      > `show xconnect all`
+    - `cpu`           > `show cpu processes`
 * `--when` is when the test has been run.
     - `both`      > for a diff `before/after`
     - `after`     > for a specific output `after`

@@ -29,6 +29,13 @@ def boot_system(hostname, when_tested):
     # ASR903_5    boot_system  True     2020-11-18 13:37:56
     return db.get_output_line(hostname, "boot_system", when_tested)[2]
 
+# Returns the CPU utilisation for the last 5 minutes on the device
+def cpu(hostname, when_tested):
+
+    # Sample output
+    # ASR903_5    cpu  25     2020-11-18 13:37:56
+    return db.get_output_line(hostname, "cpu", when_tested)[2]
+
 ### 
 ### SAVING OUTPUTS IN THE DB
 ###
@@ -58,7 +65,6 @@ def save_route_summary_db(device, list_vrf, when_tested, current_time):
             except SchemaEmptyParserError as e:
                 # Silently dicard the error, and move to the next VRF
                 pass
-
 
     # Converting as a string to be saved in the DB
     output = json.dumps(dict_final)
@@ -210,6 +216,17 @@ def save_os_current_version_db(device, when_tested, current_time):
     os_current_version = device.parse('show version')['version']['version']
 
     db.add_output(device.name, test_name, os_current_version, current_time)
+    db.add_timestamp(device.name, test_name, when_tested, current_time)
+
+# Save in the DB the CPU utilisation for the last 5 minutes
+def save_cpu(device, when_tested, current_time):
+
+    test_name = "cpu"
+
+    # Converting int as str, to be saved in the DB
+    cpu = str(device.parse('show processes cpu')['five_sec_cpu_total'])
+
+    db.add_output(device.name, test_name, cpu, current_time)
     db.add_timestamp(device.name, test_name, when_tested, current_time)
 
 # Save in the DB if the `boot system bootflash:/...` commands are present in the rigth order
@@ -457,7 +474,7 @@ def table_results(testbed):
 
                 table_line.append(end_result)
             
-            if isinstance(result, str): 
+            if isinstance(result, str) or isinstance(result, int): 
                 table_line.append(result)
 
         table.add_row(table_line)

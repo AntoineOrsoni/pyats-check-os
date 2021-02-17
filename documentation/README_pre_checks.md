@@ -82,4 +82,10 @@ For a given `testbed`, verifies the correct order of the two `boot system bootfl
 
 `check_os_current_version_device(self, testbed)`
 
-For a given `testbed`, verifies the current version of the device.
+For a given `testbed`, verifies the current version of each device.
+
+## Check the CPU utilisation for the last 5 minutes of the device
+
+`check_cpu_device(self, testbed)`
+
+For a given `testbed`, verifies the CPU utilisation for the last 5 minutes of each device.

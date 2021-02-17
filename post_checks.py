@@ -70,6 +70,7 @@ class CommonSetup(aetest.CommonSetup):
             check.save_routes_db(device, when_tested, current_time)
             check.save_isis_db(device, when_tested, current_time)
             check.save_xconnect_db(device, when_tested, current_time)
+            check.save_cpu(device, when_tested, current_time)
 
 
 class CheckSaveDatabase(aetest.Testcase):
@@ -118,6 +119,36 @@ class CheckOperData(aetest.Testcase):
                     logger.error(f"{device.name} is not using {os_target_version}. Using {os_version}")
 
         if len(not_compliant) != 0: self.failed(f"The above devices are not using {os_target_version}.")
+
+
+    @aetest.test
+    def check_cpu_device(self, testbed):
+
+        test_name = "CPU %"
+        testbed.tests_run.append(test_name)
+        logger.info(f"Checking the CPU utilisation on the device for the last 5 minutes.")
+
+        not_compliant = []
+
+        for device in testbed:
+
+            # If I couldn't connect to the device, this test auto fails
+            if device.test_results['connect_device'] == "Fail":
+                check.add_result_device(device, test_name, "Fail")
+            
+            # Else, let's get the data and test
+            if device.test_results['connect_device'] == "Pass":
+
+                # converting str to int
+                cpu = int(check.cpu(device.name, when_tested))
+                check.add_result_device(device, test_name, cpu)
+
+                # CPU utilisation above 70% => NOK
+                if cpu >= 70: 
+                    not_compliant.append(device.name)
+                    logger.error(f"{device.name} CPU is {cpu}.")
+
+        if len(not_compliant) != 0: self.failed(f"The above devices CPU utilisation is above 70%.")
 
 
     @aetest.test
