@@ -65,7 +65,7 @@ Below the release notes for each version. You can download an older version [her
 
 * fixing dual RSP issue. Device has two RSP slots but only one of the two RSP is inserted.
 
-## v 1.9
+## v1.9
 
 * Adding a check for CPU utilisation for the last 5 minutes.
 
