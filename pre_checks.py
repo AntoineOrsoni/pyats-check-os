@@ -100,8 +100,8 @@ class CheckSaveDatabase(aetest.Testcase):
             outputs_list = db.get_list_outputs_device(device.name, when_tested, current_time)
             
             # If outputs not copied, ERROR, stopping the script (not doing the other tests)
-            # 7 = os_copied, os_version, boot_system, route_summary, routes, isis, xconnect
-            if len(outputs_list) != 7: self.errored(f"Output_lists has the wrong size. Expected 7, found {len(outputs_list)}")
+            # 7 = os_copied, os_version, boot_system, route_summary, routes, isis, xconnect, cpu
+            if len(outputs_list) != 8: self.errored(f"Output_lists has the wrong size. Expected 8, found {len(outputs_list)}")
 
 
 class CheckOperData(aetest.Testcase):
